@@ -1,0 +1,16 @@
+{
+  "archery_url": "https://archery.blacklake.tech/query/",
+  "db_name": "liteman",
+  "schema_name": "public",
+  "tb_name": "dt_outsource_post",
+  "limit_num": 100,
+  "instances": [
+    "小工单_阿里云_prod_ADB_01",
+    "小工单_阿里云_prod_ADB_02",
+    "小工单_阿里云_prod_ADB_03"
+  ],
+  "auth": {
+    "csrftoken": "h9zA8KXL8gCEJHqgaca737KSZR6Aae9jxb8BhPie6AYuuO0FJVtQs570O59OnvYd",
+    "sessionid": "1i62cj8az2bbynzzdhf5if78zkonkv8d"
+  }
+}

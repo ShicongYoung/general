@@ -1,0 +1,104 @@
+{
+  "periods": {
+    "this_week": [
+      "2026-03-23",
+      "2026-03-29"
+    ],
+    "last_week": [
+      "2026-03-16",
+      "2026-03-22"
+    ],
+    "near2_week": [
+      "2026-03-16",
+      "2026-03-29"
+    ],
+    "this_month": [
+      "2026-03-01",
+      "2026-03-31"
+    ]
+  },
+  "metrics": [
+    {
+      "name": "委外管理-覆盖客户数",
+      "definition": "一周内既创建委外订单又有收发记录的客户（订单与 post 表交集）",
+      "this": 623.0,
+      "last": 599.0,
+      "is_rate": false,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    },
+    {
+      "name": "委外管理-客户留存率",
+      "definition": "本周覆盖客户数 / 近2周覆盖客户数",
+      "this": 0.7768079800498753,
+      "last": 0.7468827930174564,
+      "is_rate": true,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    },
+    {
+      "name": "委外管理-委外订单客户数",
+      "definition": "一周内创建过委外订单的客户数",
+      "this": 842.0,
+      "last": 833.0,
+      "is_rate": false,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    },
+    {
+      "name": "委外管理-订单到收发货转换率",
+      "definition": "本周覆盖客户数 / 本周委外订单客户数（有订单客户中，产生收发记录的比例）",
+      "this": 0.7399049881235155,
+      "last": 0.7190876350540216,
+      "is_rate": true,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    },
+    {
+      "name": "协同任务-覆盖客户数",
+      "definition": "一周内有任意2天创建任务的客户数",
+      "this": 103.0,
+      "last": 100.0,
+      "is_rate": false,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    },
+    {
+      "name": "协同任务-客户留存率",
+      "definition": "本周覆盖客户数 / 近2周覆盖客户数",
+      "this": 0.6280487804878049,
+      "last": 0.6097560975609756,
+      "is_rate": true,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    },
+    {
+      "name": "协同任务-创建协同任务客户数",
+      "definition": "一周内创建过任务（至少1天有任务）的客户数",
+      "this": 244.0,
+      "last": 251.0,
+      "is_rate": false,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    },
+    {
+      "name": "协同任务-活跃客户转换率",
+      "definition": "一周内有2天创建任务的客户数 / 一周内创建过任务的客户数",
+      "this": 0.42213114754098363,
+      "last": 0.398406374501992,
+      "is_rate": true,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    },
+    {
+      "name": "协同任务-从工单创建协同任务的比例",
+      "definition": "associate_id 不为空的任务数 / 一周内总任务数",
+      "this": 0.16454159077109898,
+      "last": 0.197054698457223,
+      "is_rate": true,
+      "insight": "待LLM分析",
+      "conclusion": "待LLM建议"
+    }
+  ],
+  "report_path": "周报/03月第4周周报-杨士聪.md"
+}
