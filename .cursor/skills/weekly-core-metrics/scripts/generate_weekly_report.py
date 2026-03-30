@@ -26,6 +26,11 @@ def parse_args() -> argparse.Namespace:
         default="周报/latest_metrics.json",
         help="指标数据输出 JSON 路径，供技能内的 LLM 分析步骤使用",
     )
+    parser.add_argument(
+        "--date",
+        default="",
+        help="指定日期作为基准（格式 YYYY-MM-DD），不传则使用今天",
+    )
     return parser.parse_args()
 
 
@@ -218,6 +223,68 @@ SELECT
 """.strip()
 
 
+def sql_outsource_retention(last_week_start: str, last_week_end: str, this_week_start: str, this_week_end: str) -> str:
+    """委外周留存率：上周活跃客户中本周仍活跃的比例"""
+    return f"""
+WITH last_week_orders AS (
+    SELECT DISTINCT org_id FROM dt_outsource_order
+    WHERE DATE(created_at) BETWEEN DATE '{last_week_start}' AND DATE '{last_week_end}'
+),
+last_week_posts AS (
+    SELECT DISTINCT org_id FROM dt_outsource_post
+    WHERE DATE(created_at) BETWEEN DATE '{last_week_start}' AND DATE '{last_week_end}'
+),
+last_week_active AS (
+    SELECT o.org_id FROM last_week_orders o JOIN last_week_posts p USING(org_id)
+),
+this_week_orders AS (
+    SELECT DISTINCT org_id FROM dt_outsource_order
+    WHERE DATE(created_at) BETWEEN DATE '{this_week_start}' AND DATE '{this_week_end}'
+),
+this_week_posts AS (
+    SELECT DISTINCT org_id FROM dt_outsource_post
+    WHERE DATE(created_at) BETWEEN DATE '{this_week_start}' AND DATE '{this_week_end}'
+),
+this_week_active AS (
+    SELECT o.org_id FROM this_week_orders o JOIN this_week_posts p USING(org_id)
+),
+retained AS (
+    SELECT l.org_id FROM last_week_active l JOIN this_week_active t ON l.org_id = t.org_id
+)
+SELECT
+    (SELECT COUNT(*) FROM last_week_active) AS last_week_customers,
+    (SELECT COUNT(*) FROM retained) AS retained_customers;
+""".strip()
+
+
+def sql_collab_retention(last_week_start: str, last_week_end: str, this_week_start: str, this_week_end: str) -> str:
+    """协同任务周留存率：上周活跃客户中本周仍活跃的比例"""
+    return f"""
+WITH last_week_base AS (
+    SELECT org_id, DATE(created_at) AS act_date
+    FROM dt_collaborative_task
+    WHERE DATE(created_at) BETWEEN DATE '{last_week_start}' AND DATE '{last_week_end}'
+),
+last_week_active AS (
+    SELECT org_id FROM last_week_base GROUP BY org_id HAVING COUNT(DISTINCT act_date) >= 2
+),
+this_week_base AS (
+    SELECT org_id, DATE(created_at) AS act_date
+    FROM dt_collaborative_task
+    WHERE DATE(created_at) BETWEEN DATE '{this_week_start}' AND DATE '{this_week_end}'
+),
+this_week_active AS (
+    SELECT org_id FROM this_week_base GROUP BY org_id HAVING COUNT(DISTINCT act_date) >= 2
+),
+retained AS (
+    SELECT l.org_id FROM last_week_active l JOIN this_week_active t ON l.org_id = t.org_id
+)
+SELECT
+    (SELECT COUNT(*) FROM last_week_active) AS last_week_customers,
+    (SELECT COUNT(*) FROM retained) AS retained_customers;
+""".strip()
+
+
 def fetch_sum_over_instances(config: dict, sql: str, key_list: List[str]) -> Dict[str, float]:
     acc = {k: 0.0 for k in key_list}
     for instance in config["instances"]:
@@ -228,19 +295,64 @@ def fetch_sum_over_instances(config: dict, sql: str, key_list: List[str]) -> Dic
     return acc
 
 
+def fetch_customer_ids_over_instances(config: dict, sql: str) -> set:
+    """跨实例查询客户ID并去重"""
+    all_ids = set()
+    for instance in config["instances"]:
+        payload = post_sql(config, instance, sql)
+        # 解析返回的客户ID列表
+        if isinstance(payload, dict) and "data" in payload:
+            data = payload["data"]
+            if isinstance(data, dict) and "rows" in data:
+                for row in data["rows"]:
+                    if row and len(row) > 0:
+                        all_ids.add(str(row[0]))
+    return all_ids
+
+
+def sql_outsource_customer_ids(start_date: str, end_date: str) -> str:
+    """查询委外活跃客户ID（有订单且有post）"""
+    return f"""
+WITH orders AS (
+    SELECT DISTINCT org_id FROM dt_outsource_order
+    WHERE DATE(created_at) BETWEEN DATE '{start_date}' AND DATE '{end_date}'
+),
+posts AS (
+    SELECT DISTINCT org_id FROM dt_outsource_post
+    WHERE DATE(created_at) BETWEEN DATE '{start_date}' AND DATE '{end_date}'
+)
+SELECT o.org_id FROM orders o JOIN posts p USING(org_id);
+""".strip()
+
+
+def sql_collab_customer_ids(start_date: str, end_date: str) -> str:
+    """查询协同任务活跃客户ID（2天创建任务）"""
+    return f"""
+WITH base AS (
+    SELECT org_id, DATE(created_at) AS act_date
+    FROM dt_collaborative_task
+    WHERE DATE(created_at) BETWEEN DATE '{start_date}' AND DATE '{end_date}'
+)
+SELECT org_id FROM base GROUP BY org_id HAVING COUNT(DISTINCT act_date) >= 2;
+""".strip()
+
+
 def build_metrics(config: dict, p: Dict[str, Tuple[dt.date, dt.date]]) -> List[dict]:
     tw_s, tw_e = d(p["this_week"][0]), d(p["this_week"][1])
     lw_s, lw_e = d(p["last_week"][0]), d(p["last_week"][1])
     n2_s, n2_e = d(p["near2_week"][0]), d(p["near2_week"][1])
+
+    # 计算前上周日期（上周的上周）
+    lw_start_date = p["last_week"][0]
+    llw_start = lw_start_date - dt.timedelta(days=7)
+    llw_end = lw_start_date - dt.timedelta(days=1)
+    llw_s, llw_e = d(llw_start), d(llw_end)
 
     out_this = fetch_sum_over_instances(
         config, sql_outsource_counts(tw_s, tw_e), ["order_customers", "covered_customers"]
     )
     out_last = fetch_sum_over_instances(
         config, sql_outsource_counts(lw_s, lw_e), ["order_customers", "covered_customers"]
-    )
-    out_near2 = fetch_sum_over_instances(
-        config, sql_outsource_counts(n2_s, n2_e), ["order_customers", "covered_customers"]
     )
     col_this = fetch_sum_over_instances(
         config,
@@ -252,11 +364,42 @@ def build_metrics(config: dict, p: Dict[str, Tuple[dt.date, dt.date]]) -> List[d
         sql_collab_counts(lw_s, lw_e),
         ["task_customers", "covered_customers", "active_2day_customers", "total_tasks", "associated_tasks"],
     )
-    col_near2 = fetch_sum_over_instances(
-        config,
-        sql_collab_counts(n2_s, n2_e),
-        ["task_customers", "covered_customers", "active_2day_customers", "total_tasks", "associated_tasks"],
+
+    # 真实周留存率：跨实例去重后计算
+    # 委外留存率 - 本周（上周→本周）
+    out_last_week_ids = fetch_customer_ids_over_instances(
+        config, sql_outsource_customer_ids(lw_s, lw_e)
     )
+    out_this_week_ids = fetch_customer_ids_over_instances(
+        config, sql_outsource_customer_ids(tw_s, tw_e)
+    )
+    out_retained_ids = out_last_week_ids & out_this_week_ids
+    out_retention_rate = len(out_retained_ids) / len(out_last_week_ids) if out_last_week_ids else 0.0
+
+    # 委外留存率 - 上周（前上周→上周）
+    out_llw_ids = fetch_customer_ids_over_instances(
+        config, sql_outsource_customer_ids(llw_s, llw_e)
+    )
+    out_retained_last_ids = out_llw_ids & out_last_week_ids
+    out_retention_rate_last = len(out_retained_last_ids) / len(out_llw_ids) if out_llw_ids else 0.0
+
+    # 协同任务留存率 - 本周（上周→本周）
+    col_last_week_ids = fetch_customer_ids_over_instances(
+        config, sql_collab_customer_ids(lw_s, lw_e)
+    )
+    col_this_week_ids = fetch_customer_ids_over_instances(
+        config, sql_collab_customer_ids(tw_s, tw_e)
+    )
+    col_retained_ids = col_last_week_ids & col_this_week_ids
+    col_retention_rate = len(col_retained_ids) / len(col_last_week_ids) if col_last_week_ids else 0.0
+
+    # 协同任务留存率 - 上周（前上周→上周）
+    col_llw_ids = fetch_customer_ids_over_instances(
+        config, sql_collab_customer_ids(llw_s, llw_e)
+    )
+    col_retained_last_ids = col_llw_ids & col_last_week_ids
+    col_retention_rate_last = len(col_retained_last_ids) / len(col_llw_ids) if col_llw_ids else 0.0
+    
     metrics = []
 
     # 委外管理
@@ -272,9 +415,9 @@ def build_metrics(config: dict, p: Dict[str, Tuple[dt.date, dt.date]]) -> List[d
     metrics.append(
         {
             "name": "委外管理-客户留存率",
-            "definition": "本周覆盖客户数 / 近2周覆盖客户数",
-            "this": safe_div(out_this["covered_customers"], out_near2["covered_customers"]),
-            "last": safe_div(out_last["covered_customers"], out_near2["covered_customers"]),
+            "definition": "上周活跃客户中本周仍活跃的比例（跨实例去重：上周客户∩本周客户 / 上周客户）",
+            "this": out_retention_rate,
+            "last": out_retention_rate_last,  # 前上周→上周的真实留存率
             "is_rate": True,
         }
     )
@@ -310,9 +453,9 @@ def build_metrics(config: dict, p: Dict[str, Tuple[dt.date, dt.date]]) -> List[d
     metrics.append(
         {
             "name": "协同任务-客户留存率",
-            "definition": "本周覆盖客户数 / 近2周覆盖客户数",
-            "this": safe_div(col_this["covered_customers"], col_near2["covered_customers"]),
-            "last": safe_div(col_last["covered_customers"], col_near2["covered_customers"]),
+            "definition": "上周活跃客户中本周仍活跃的比例（跨实例去重：上周客户∩本周客户 / 上周客户）",
+            "this": col_retention_rate,
+            "last": col_retention_rate_last,  # 前上周→上周的真实留存率
             "is_rate": True,
         }
     )
@@ -388,7 +531,10 @@ def render_markdown(metrics: List[dict], p: Dict[str, Tuple[dt.date, dt.date]]) 
 def main() -> None:
     args = parse_args()
     config = load_config(args.config)
-    today = dt.date.today()
+    if args.date:
+        today = dt.datetime.strptime(args.date, "%Y-%m-%d").date()
+    else:
+        today = dt.date.today()
     periods = period_dates(today)
     metrics = build_metrics(config, periods)
     md = render_markdown(metrics, periods)
