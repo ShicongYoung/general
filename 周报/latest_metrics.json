@@ -21,8 +21,8 @@
     {
       "name": "委外管理-覆盖客户数",
       "definition": "一周内既创建委外订单又有收发记录的客户（订单与 post 表交集）",
-      "this": 648.0,
-      "last": 598.0,
+      "this": 645.0,
+      "last": 596.0,
       "is_rate": false,
       "insight": "待LLM分析",
       "conclusion": "待LLM建议"
@@ -30,8 +30,8 @@
     {
       "name": "委外管理-客户留存率",
       "definition": "上周活跃客户中本周仍活跃的比例（跨实例去重：上周客户∩本周客户 / 上周客户）",
-      "this": 0.528,
-      "last": 0.484375,
+      "this": 0.544,
+      "last": 0.6509803921568628,
       "is_rate": true,
       "insight": "待LLM分析",
       "conclusion": "待LLM建议"
@@ -39,8 +39,8 @@
     {
       "name": "委外管理-委外订单客户数",
       "definition": "一周内创建过委外订单的客户数",
-      "this": 867.0,
-      "last": 832.0,
+      "this": 862.0,
+      "last": 830.0,
       "is_rate": false,
       "insight": "待LLM分析",
       "conclusion": "待LLM建议"
@@ -48,8 +48,8 @@
     {
       "name": "委外管理-订单到收发货转换率",
       "definition": "本周覆盖客户数 / 本周委外订单客户数（有订单客户中，产生收发记录的比例）",
-      "this": 0.7474048442906575,
-      "last": 0.71875,
+      "this": 0.7482598607888631,
+      "last": 0.7180722891566265,
       "is_rate": true,
       "insight": "待LLM分析",
       "conclusion": "待LLM建议"
@@ -75,8 +75,8 @@
     {
       "name": "协同任务-创建协同任务客户数",
       "definition": "一周内创建过任务（至少1天有任务）的客户数",
-      "this": 256.0,
-      "last": 251.0,
+      "this": 255.0,
+      "last": 250.0,
       "is_rate": false,
       "insight": "待LLM分析",
       "conclusion": "待LLM建议"
@@ -84,8 +84,8 @@
     {
       "name": "协同任务-活跃客户转换率",
       "definition": "一周内有2天创建任务的客户数 / 一周内创建过任务的客户数",
-      "this": 0.4140625,
-      "last": 0.398406374501992,
+      "this": 0.41568627450980394,
+      "last": 0.4,
       "is_rate": true,
       "insight": "待LLM分析",
       "conclusion": "待LLM建议"
@@ -93,8 +93,8 @@
     {
       "name": "协同任务-从工单创建协同任务的比例",
       "definition": "associate_id 不为空的任务数 / 一周内总任务数",
-      "this": 0.1601063829787234,
-      "last": 0.197054698457223,
+      "this": 0.16044776119402984,
+      "last": 0.1973314606741573,
       "is_rate": true,
       "insight": "待LLM分析",
       "conclusion": "待LLM建议"

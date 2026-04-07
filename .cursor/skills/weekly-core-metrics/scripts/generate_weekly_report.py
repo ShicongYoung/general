@@ -365,40 +365,30 @@ def build_metrics(config: dict, p: Dict[str, Tuple[dt.date, dt.date]]) -> List[d
         ["task_customers", "covered_customers", "active_2day_customers", "total_tasks", "associated_tasks"],
     )
 
-    # 真实周留存率：跨实例去重后计算
+    # 留存率：使用标量 COUNT SQL，不受 limit_num 影响，按实例加总后计算比率
     # 委外留存率 - 本周（上周→本周）
-    out_last_week_ids = fetch_customer_ids_over_instances(
-        config, sql_outsource_customer_ids(lw_s, lw_e)
+    out_ret_this = fetch_sum_over_instances(
+        config, sql_outsource_retention(lw_s, lw_e, tw_s, tw_e), ["last_week_customers", "retained_customers"]
     )
-    out_this_week_ids = fetch_customer_ids_over_instances(
-        config, sql_outsource_customer_ids(tw_s, tw_e)
-    )
-    out_retained_ids = out_last_week_ids & out_this_week_ids
-    out_retention_rate = len(out_retained_ids) / len(out_last_week_ids) if out_last_week_ids else 0.0
+    out_retention_rate = safe_div(out_ret_this["retained_customers"], out_ret_this["last_week_customers"])
 
     # 委外留存率 - 上周（前上周→上周）
-    out_llw_ids = fetch_customer_ids_over_instances(
-        config, sql_outsource_customer_ids(llw_s, llw_e)
+    out_ret_last = fetch_sum_over_instances(
+        config, sql_outsource_retention(llw_s, llw_e, lw_s, lw_e), ["last_week_customers", "retained_customers"]
     )
-    out_retained_last_ids = out_llw_ids & out_last_week_ids
-    out_retention_rate_last = len(out_retained_last_ids) / len(out_llw_ids) if out_llw_ids else 0.0
+    out_retention_rate_last = safe_div(out_ret_last["retained_customers"], out_ret_last["last_week_customers"])
 
     # 协同任务留存率 - 本周（上周→本周）
-    col_last_week_ids = fetch_customer_ids_over_instances(
-        config, sql_collab_customer_ids(lw_s, lw_e)
+    col_ret_this = fetch_sum_over_instances(
+        config, sql_collab_retention(lw_s, lw_e, tw_s, tw_e), ["last_week_customers", "retained_customers"]
     )
-    col_this_week_ids = fetch_customer_ids_over_instances(
-        config, sql_collab_customer_ids(tw_s, tw_e)
-    )
-    col_retained_ids = col_last_week_ids & col_this_week_ids
-    col_retention_rate = len(col_retained_ids) / len(col_last_week_ids) if col_last_week_ids else 0.0
+    col_retention_rate = safe_div(col_ret_this["retained_customers"], col_ret_this["last_week_customers"])
 
     # 协同任务留存率 - 上周（前上周→上周）
-    col_llw_ids = fetch_customer_ids_over_instances(
-        config, sql_collab_customer_ids(llw_s, llw_e)
+    col_ret_last = fetch_sum_over_instances(
+        config, sql_collab_retention(llw_s, llw_e, lw_s, lw_e), ["last_week_customers", "retained_customers"]
     )
-    col_retained_last_ids = col_llw_ids & col_last_week_ids
-    col_retention_rate_last = len(col_retained_last_ids) / len(col_llw_ids) if col_llw_ids else 0.0
+    col_retention_rate_last = safe_div(col_ret_last["retained_customers"], col_ret_last["last_week_customers"])
     
     metrics = []
 

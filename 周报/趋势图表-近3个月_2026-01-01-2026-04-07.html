@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>核心模块指标趋势 · 近3个月（2026-01-01 ~ 2026-04-07）</title>
+<title>核心模块指标趋势 · 2026-01-01 ~ 2026-04-05</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -49,39 +49,39 @@ canvas{width:100%!important}
 <body>
 
 <h1>核心模块指标趋势</h1>
-<p class="subtitle">统计周期：近3个月（2026-01-01 ~ 2026-04-07）&nbsp;·&nbsp;共 14 周&nbsp;·&nbsp;最新数据周：04月第1周</p>
+<p class="subtitle">统计周期：2026-01-01 ~ 2026-04-05&nbsp;·&nbsp;共 13 周&nbsp;·&nbsp;最新数据周：03月第5周</p>
 
 <!-- 摘要卡片 -->
 <div class="summary-row">
   <div class="kpi">
     <div class="title">委外覆盖客户（最新周）</div>
-    <div class="val">252<span class="badge down">▼ 57.6%</span></div>
-    <div class="sub">上周 595</div>
+    <div class="val">595<span class="badge down">▼ 7.8%</span></div>
+    <div class="sub">上周 645</div>
   </div>
   <div class="kpi">
     <div class="title">委外客户留存率</div>
-    <div class="val">38.2%<span class="badge down">▼ 39.5%</span></div>
-    <div class="sub">上周 63.1%</div>
+    <div class="val">63.1%<span class="badge down">▼ 13.3%</span></div>
+    <div class="sub">上周 72.8%</div>
   </div>
   <div class="kpi">
     <div class="title">委外订单→收发货转化率</div>
-    <div class="val">68.9%<span class="badge down">▼ 6.5%</span></div>
-    <div class="sub">上周 73.6%</div>
+    <div class="val">73.6%<span class="badge down">▼ 1.6%</span></div>
+    <div class="sub">上周 74.8%</div>
   </div>
   <div class="kpi" style="border-left:3px solid #2d9d78">
     <div class="title">协同活跃客户（最新周）</div>
-    <div class="val">18<span class="badge down">▼ 81.2%</span></div>
-    <div class="sub">上周 96</div>
+    <div class="val">96<span class="badge down">▼ 9.4%</span></div>
+    <div class="sub">上周 106</div>
   </div>
   <div class="kpi" style="border-left:3px solid #2d9d78">
     <div class="title">协同客户留存率</div>
-    <div class="val">17.7%<span class="badge down">▼ 71.1%</span></div>
-    <div class="sub">上周 61.3%</div>
+    <div class="val">61.3%<span class="badge down">▼ 2.7%</span></div>
+    <div class="sub">上周 63.0%</div>
   </div>
   <div class="kpi" style="border-left:3px solid #2d9d78">
     <div class="title">协同活跃客户转换率</div>
-    <div class="val">23.7%<span class="badge down">▼ 42.8%</span></div>
-    <div class="sub">上周 41.4%</div>
+    <div class="val">41.4%<span class="badge down">▼ 0.5%</span></div>
+    <div class="sub">上周 41.6%</div>
   </div>
 </div>
 
@@ -93,19 +93,19 @@ canvas{width:100%!important}
     <div class="chart-card">
       <h3>客户规模趋势（人数）</h3>
       <canvas id="c_out_scale"></canvas>
-      <div class="insight">最新值 <b>252</b>（04月第1周），环比 <b>-57.6%</b>；整体下降约 18%。 订单客户：最新值 <b>366</b>（04月第1周），环比 <b>-54.7%</b>；整体下降约 17%。</div>
+      <div class="insight">最新值 <b>595</b>（03月第5周），环比 <b>-7.8%</b>；整体上升约 20%。 订单客户：最新值 <b>808</b>（03月第5周），环比 <b>-6.3%</b>；整体上升约 18%。</div>
     </div>
 
     <div class="chart-card">
       <h3>客户留存率趋势（%）<small style="color:#aaa;font-weight:400"> · 上周活跃→本周仍活跃</small></h3>
       <canvas id="c_out_retain"></canvas>
-      <div class="insight">区间最高 <b>88.9%</b>（02月第4周），最低 <b>3.3%</b>（02月第3周）；最新值 <b>38.2%</b>（环比 -39.5%）。</div>
+      <div class="insight">区间最高 <b>88.9%</b>（02月第4周），最低 <b>3.3%</b>（02月第3周）；最新值 <b>63.1%</b>（环比 -13.3%）。</div>
     </div>
 
     <div class="chart-card">
       <h3>订单 → 收发货转化率（%）</h3>
       <canvas id="c_out_convert"></canvas>
-      <div class="insight">最新值 <b>68.9%</b>（04月第1周），环比 <b>-6.5%</b>；整体相对平稳。</div>
+      <div class="insight">最新值 <b>73.6%</b>（03月第5周），环比 <b>-1.6%</b>；整体相对平稳。</div>
     </div>
 
   </div>
@@ -119,19 +119,19 @@ canvas{width:100%!important}
     <div class="chart-card">
       <h3>客户规模趋势（人数）</h3>
       <canvas id="c_col_scale"></canvas>
-      <div class="insight green">最新值 <b>18</b>（04月第1周），环比 <b>-81.2%</b>；整体下降约 30%。 创建任务客户：最新值 <b>76</b>（04月第1周），环比 <b>-67.2%</b>；整体下降约 25%。</div>
+      <div class="insight green">最新值 <b>96</b>（03月第5周），环比 <b>-9.4%</b>；整体上升约 25%。 创建任务客户：最新值 <b>232</b>（03月第5周），环比 <b>-9.0%</b>；整体上升约 18%。</div>
     </div>
 
     <div class="chart-card">
       <h3>客户留存率趋势（%）<small style="color:#aaa;font-weight:400"> · 上周活跃→本周仍活跃</small></h3>
       <canvas id="c_col_retain"></canvas>
-      <div class="insight green">区间最高 <b>100.0%</b>（02月第4周），最低 <b>7.4%</b>（02月第3周）；最新值 <b>17.7%</b>（环比 -71.1%）。</div>
+      <div class="insight green">区间最高 <b>100.0%</b>（02月第4周），最低 <b>7.4%</b>（02月第3周）；最新值 <b>61.3%</b>（环比 -2.7%）。</div>
     </div>
 
     <div class="chart-card">
       <h3>活跃转换率 & 工单关联比例（%）</h3>
       <canvas id="c_col_rate"></canvas>
-      <div class="insight green">活跃转换率：最新值 <b>23.7%</b>（04月第1周），环比 <b>-42.8%</b>；整体下降约 18%。 工单关联：最新值 <b>13.7%</b>（04月第1周），环比 <b>-14.1%</b>；整体上升约 65%。</div>
+      <div class="insight green">活跃转换率：最新值 <b>41.4%</b>（03月第5周），环比 <b>-0.5%</b>；整体上升约 5%。 工单关联：最新值 <b>15.9%</b>（03月第5周），环比 <b>-0.6%</b>；整体上升约 78%。</div>
     </div>
 
   </div>
@@ -143,7 +143,7 @@ canvas{width:100%!important}
 </p>
 
 <script>
-const labels = ["01月第1周", "01月第2周", "01月第3周", "01月第4周", "02月第1周", "02月第2周", "02月第3周", "02月第4周", "03月第1周", "03月第2周", "03月第3周", "03月第4周", "03月第5周", "04月第1周"];
+const labels = ["01月第1周", "01月第2周", "01月第3周", "01月第4周", "02月第1周", "02月第2周", "02月第3周", "02月第4周", "03月第1周", "03月第2周", "03月第3周", "03月第4周", "03月第5周"];
 
 // 颜色
 const BLUE   = '#4361ee';
@@ -186,8 +186,8 @@ const pctOpts = (yLabel) => {
 new Chart(document.getElementById('c_out_scale'), {
   type:'line', data:{ labels,
     datasets:[
-      mkLine('覆盖客户数（订单+收发）', [506, 527, 545, 501, 425, 214, 9, 359, 568, 599, 596, 645, 595, 252], BLUE),
-      mkLine('委外订单客户数',          [708, 711, 738, 691, 594, 304, 17, 558, 771, 821, 830, 862, 808, 366], LBLUE, [6,3]),
+      mkLine('覆盖客户数（订单+收发）', [506, 527, 545, 501, 425, 214, 9, 359, 568, 599, 596, 645, 595], BLUE),
+      mkLine('委外订单客户数',          [708, 711, 738, 691, 594, 304, 17, 558, 771, 821, 830, 862, 808], LBLUE, [6,3]),
     ]
   }, options: baseOpts('人数'),
 });
@@ -196,7 +196,7 @@ new Chart(document.getElementById('c_out_scale'), {
 new Chart(document.getElementById('c_out_retain'), {
   type:'line', data:{ labels,
     datasets:[
-      mkLine('委外客户留存率', [null, 69.96, 70.97, 67.16, 62.28, 39.53, 3.27, 88.89, 76.88, 68.66, 69.28, 72.82, 63.10, 38.15], BLUE),
+      mkLine('委外客户留存率', [null, 69.96, 70.97, 67.16, 62.28, 39.53, 3.27, 88.89, 76.88, 68.66, 69.28, 72.82, 63.10], BLUE),
     ]
   }, options: pctOpts('%'),
 });
@@ -205,7 +205,7 @@ new Chart(document.getElementById('c_out_retain'), {
 new Chart(document.getElementById('c_out_convert'), {
   type:'line', data:{ labels,
     datasets:[
-      mkLine('订单→收发货转化率', [71.47, 74.12, 73.85, 72.50, 71.55, 70.39, 52.94, 64.34, 73.67, 72.96, 71.81, 74.83, 73.64, 68.85], BLUE),
+      mkLine('订单→收发货转化率', [71.47, 74.12, 73.85, 72.50, 71.55, 70.39, 52.94, 64.34, 73.67, 72.96, 71.81, 74.83, 73.64], BLUE),
     ]
   }, options: pctOpts('%'),
 });
@@ -214,8 +214,8 @@ new Chart(document.getElementById('c_out_convert'), {
 new Chart(document.getElementById('c_col_scale'), {
   type:'line', data:{ labels,
     datasets:[
-      mkLine('活跃客户数（≥2天任务）', [74, 88, 101, 77, 77, 27, 2, 54, 95, 96, 100, 106, 96, 18], GREEN),
-      mkLine('创建任务客户数（≥1天）', [181, 231, 279, 200, 187, 78, 5, 143, 231, 217, 250, 255, 232, 76],   LGREEN, [6,3]),
+      mkLine('活跃客户数（≥2天任务）', [74, 88, 101, 77, 77, 27, 2, 54, 95, 96, 100, 106, 96], GREEN),
+      mkLine('创建任务客户数（≥1天）', [181, 231, 279, 200, 187, 78, 5, 143, 231, 217, 250, 255, 232],   LGREEN, [6,3]),
     ]
   }, options: baseOpts('人数'),
 });
@@ -224,7 +224,7 @@ new Chart(document.getElementById('c_col_scale'), {
 new Chart(document.getElementById('c_col_retain'), {
   type:'line', data:{ labels,
     datasets:[
-      mkLine('协同客户留存率', [null, 68.92, 65.91, 54.46, 64.94, 28.57, 7.41, 100.00, 77.78, 64.21, 67.71, 63.00, 61.32, 17.71], GREEN),
+      mkLine('协同客户留存率', [null, 68.92, 65.91, 54.46, 64.94, 28.57, 7.41, 100.00, 77.78, 64.21, 67.71, 63.00, 61.32], GREEN),
     ]
   }, options: pctOpts('%'),
 });
@@ -233,11 +233,70 @@ new Chart(document.getElementById('c_col_retain'), {
 new Chart(document.getElementById('c_col_rate'), {
   type:'line', data:{ labels,
     datasets:[
-      mkLine('活跃客户转换率（2天/全体）', [40.88, 38.10, 36.20, 38.50, 41.18, 34.62, 40.00, 37.76, 41.13, 44.24, 40.00, 41.57, 41.38, 23.68], GREEN),
-      mkLine('工单关联创建比例',           [2.18, 15.83, 21.19, 19.91, 23.09, 17.33, 0.00, 15.52, 18.85, 19.22, 19.73, 16.04, 15.95, 13.70],   ORANGE, [4,3]),
+      mkLine('活跃客户转换率（2天/全体）', [40.88, 38.10, 36.20, 38.50, 41.18, 34.62, 40.00, 37.76, 41.13, 44.24, 40.00, 41.57, 41.38], GREEN),
+      mkLine('工单关联创建比例',           [2.18, 15.83, 21.19, 19.91, 23.09, 17.33, 0.00, 15.52, 18.85, 19.22, 19.73, 16.04, 15.95],   ORANGE, [4,3]),
     ]
   }, options: pctOpts('%'),
 });
 </script>
+
+<!-- 综合分析结论 -->
+<div style="margin-top:36px;background:#fff;border-radius:12px;padding:28px 32px;box-shadow:0 1px 8px rgba(0,0,0,.07)">
+  <h2 style="font-size:17px;font-weight:700;color:#111;margin-bottom:20px">📊 近3个月综合分析结论</h2>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+
+    <!-- 委外管理 -->
+    <div>
+      <h3 style="font-size:14px;font-weight:700;color:#4361ee;border-left:4px solid #4361ee;padding-left:10px;margin-bottom:14px">委外管理</h3>
+      <div style="font-size:13.5px;line-height:1.9;color:#333">
+        <p style="margin-bottom:10px">
+          <b>📈 整体规模先升后稳</b><br>
+          1月覆盖客户稳定在 500~545，2月第3周（春节）骤降至 <b>9人</b>，节后从2月第4周开始快速回升，3月第4周达到近3个月最高点 <b>645人</b>，3月第5周小幅回落至595。整体呈现"节前平稳→春节低谷→节后恢复→3月稳中有升"的季节性走势。
+        </p>
+        <p style="margin-bottom:10px">
+          <b>🔄 留存率波动明显，节后回暖显著</b><br>
+          春节期间留存率跌至 <b>3.3%</b>（几乎全部流失），2月第4周节后留存率反弹至 <b>88.9%</b>（节前客户大量回流），3月稳定在 63~73%。近两周连续下滑（72.8%→63.1%），需关注是否进入新一轮流失周期。
+        </p>
+        <p>
+          <b>✅ 转化率结构健康且稳定</b><br>
+          订单→收发货转化率全程维持在 <b>64~75%</b>，仅春节周因分母基数极小略低（52.9%），其余各周表现稳定，说明使用委外功能的客户大多能完成完整操作链路，产品体验无明显瓶颈。
+        </p>
+      </div>
+    </div>
+
+    <!-- 协同任务 -->
+    <div>
+      <h3 style="font-size:14px;font-weight:700;color:#2d9d78;border-left:4px solid #2d9d78;padding-left:10px;margin-bottom:14px">协同任务</h3>
+      <div style="font-size:13.5px;line-height:1.9;color:#333">
+        <p style="margin-bottom:10px">
+          <b>📈 活跃客户规模节后超越节前</b><br>
+          1月活跃客户在 74~101 之间，春节周跌至 <b>2人</b>，3月第4周恢复至 <b>106人</b>，超过1月峰值，说明协同任务模块在3月实现了正向增长。3月第5周回落至96，仍高于1月均值。
+        </p>
+        <p style="margin-bottom:10px">
+          <b>🔄 留存率整体偏弱，中间出现过100%回流</b><br>
+          1月留存率在 55~69% 之间，2月第3周春节骤降至 <b>7.4%</b>，2月第4周节后回流至 <b>100%</b>（上周基数仅2人），3月留存率稳定在 61~78%。当前63.1%处于中等水平，约4成客户无法连续两周活跃，<b>用户使用连续性仍有较大提升空间</b>。
+        </p>
+        <p>
+          <b>⚠️ 工单关联比例1月异常低，后续回归正常</b><br>
+          1月第1周工单关联比例仅 <b>2.2%</b>（疑为数据初始化或功能刚上线），1月第2周起回升至16~23%，3月后略有下降（15~16%）。约 <b>84%</b> 的协同任务仍独立创建，工单→协同的联动场景渗透率偏低，是后续重点提升方向。
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 关键建议 -->
+  <div style="margin-top:20px;background:#f8f9fd;border-radius:8px;padding:16px 20px">
+    <h3 style="font-size:13px;font-weight:700;color:#555;margin-bottom:10px">💡 改进建议</h3>
+    <ol style="font-size:13px;line-height:2;color:#555;padding-left:18px;margin:0">
+      <li>委外留存率近两周连续下滑（72.8%→63.1%），建议对3月第4周活跃、3月第5周流失的客户做定向触达，了解停用原因。</li>
+      <li>协同任务活跃客户转换率近3个月稳定在 38~44%，可将 <b>45%</b> 设为下一阶段目标，通过任务模板、使用提醒等手段拉升深度使用比例。</li>
+      <li>工单关联创建比例长期在16%左右，建议在工单详情页增加"创建协同任务"快捷入口，降低用户感知门槛，推动渗透率提升至 <b>25%+</b>。</li>
+      <li>春节周数据可作为流量基线排除（委外覆盖仅9、协同仅2），分析趋势时建议跳过该周或标注为异常点。</li>
+    </ol>
+  </div>
+</div>
+
 </body>
 </html>

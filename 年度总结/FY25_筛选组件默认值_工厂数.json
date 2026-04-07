@@ -1,0 +1,29 @@
+{
+  "25财年时间窗": [
+    "2026-03-30",
+    "2026-04-05"
+  ],
+  "dt_custom_filter_info_列说明": [
+    "id",
+    "org_id",
+    "dashboard_id",
+    "name",
+    "filter_condition（json/jsonb：筛选与图表映射，含 defaultValueInfo 表示默认值）",
+    "deleted_at",
+    "created_at",
+    "updated_at",
+    "creator_id",
+    "operator_id"
+  ],
+  "默认值判定": "jsonb_path_exists(filter_condition::jsonb, '$[*] ? (@.defaultValueInfo != null)') — 与业务样例中 defaultValueInfo 块一致",
+  "metrics": {
+    "自定义报表": {
+      "全量_当前有效_有默认值配置的工厂数": 603,
+      "FY25窗内_筛选记录新建或更新_且有默认值的工厂数": 61
+    },
+    "智能看板": {
+      "全量_当前有效_有默认值配置的工厂数": 22,
+      "FY25窗内_筛选记录新建或更新_且有默认值的工厂数": 1
+    }
+  }
+}
