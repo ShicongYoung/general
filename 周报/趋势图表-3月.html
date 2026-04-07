@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>核心模块指标趋势 · 2026年3月</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#f0f2f5;color:#222;padding:28px 32px}
+h1{font-size:22px;font-weight:700;color:#111;margin-bottom:4px}
+.subtitle{font-size:13px;color:#888;margin-bottom:28px}
+
+/* 摘要卡片行 */
+.summary-row{display:flex;gap:12px;margin-bottom:28px;flex-wrap:wrap}
+.kpi{background:#fff;border-radius:10px;padding:14px 18px;flex:1;min-width:140px;
+      box-shadow:0 1px 6px rgba(0,0,0,.07)}
+.kpi .title{font-size:11px;color:#999;margin-bottom:4px}
+.kpi .val{font-size:22px;font-weight:700;color:#111}
+.kpi .sub{font-size:12px;color:#aaa;margin-top:2px}
+.badge{font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;margin-left:6px}
+.badge.up{background:#e6f9f0;color:#10a060}
+.badge.down{background:#fff0f0;color:#e04040}
+
+/* 分区 */
+.section{margin-bottom:36px}
+.section-title{font-size:17px;font-weight:700;color:#fff;
+                background:linear-gradient(90deg,#4361ee,#7b8cde);
+                padding:10px 20px;border-radius:10px;margin-bottom:20px}
+.section-title.green{background:linear-gradient(90deg,#2d9d78,#5dc8a0)}
+
+/* 图表网格 */
+.chart-grid{display:grid;gap:20px;grid-template-columns:1fr 1fr}
+.chart-grid.three{grid-template-columns:1fr 1fr 1fr}
+.chart-card{background:#fff;border-radius:12px;padding:22px 24px 18px;
+             box-shadow:0 1px 8px rgba(0,0,0,.07)}
+.chart-card h3{font-size:14px;font-weight:600;color:#444;margin-bottom:14px}
+canvas{width:100%!important}
+.insight{margin-top:12px;font-size:12.5px;color:#555;line-height:1.6;
+          background:#f8f9fd;border-left:3px solid #4361ee;padding:8px 12px;border-radius:0 6px 6px 0}
+.insight.green{border-left-color:#2d9d78}
+
+@media(max-width:900px){
+  .chart-grid,.chart-grid.three{grid-template-columns:1fr}
+  .summary-row{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<h1>核心模块指标趋势</h1>
+<p class="subtitle">统计周期：2026-03-02 ~ 2026-04-05（共5周）&nbsp;·&nbsp;最新数据周：03月第5周</p>
+
+<!-- 摘要卡片 -->
+<div class="summary-row">
+  <div class="kpi">
+    <div class="title">委外覆盖客户（最新周）</div>
+    <div class="val">595<span class="badge down">▼ 7.8%</span></div>
+    <div class="sub">上周 645</div>
+  </div>
+  <div class="kpi">
+    <div class="title">委外客户留存率</div>
+    <div class="val">63.1%<span class="badge down">▼ 13.3%</span></div>
+    <div class="sub">上周 72.8%</div>
+  </div>
+  <div class="kpi">
+    <div class="title">委外订单→收发货转化率</div>
+    <div class="val">73.6%<span class="badge down">▼ 1.6%</span></div>
+    <div class="sub">上周 74.8%</div>
+  </div>
+  <div class="kpi" style="border-left:3px solid #2d9d78">
+    <div class="title">协同活跃客户（最新周）</div>
+    <div class="val">96<span class="badge down">▼ 9.4%</span></div>
+    <div class="sub">上周 106</div>
+  </div>
+  <div class="kpi" style="border-left:3px solid #2d9d78">
+    <div class="title">协同客户留存率</div>
+    <div class="val">61.3%<span class="badge down">▼ 2.7%</span></div>
+    <div class="sub">上周 63.0%</div>
+  </div>
+  <div class="kpi" style="border-left:3px solid #2d9d78">
+    <div class="title">协同活跃客户转换率</div>
+    <div class="val">41.4%<span class="badge down">▼ 0.5%</span></div>
+    <div class="sub">上周 41.6%</div>
+  </div>
+</div>
+
+<!-- 委外管理 -->
+<div class="section">
+  <div class="section-title">📦 委外管理</div>
+  <div class="chart-grid three">
+
+    <div class="chart-card">
+      <h3>客户规模趋势（人数）</h3>
+      <canvas id="c_out_scale"></canvas>
+      <div class="insight">最新值 <b>595</b>（03月第5周），环比 <b>-7.8%</b>；月内整体上升约 6%。 订单客户：最新值 <b>808</b>（03月第5周），环比 <b>-6.3%</b>；月内整体相对平稳。</div>
+    </div>
+
+    <div class="chart-card">
+      <h3>客户留存率趋势（%）<small style="color:#aaa;font-weight:400"> · 上周活跃→本周仍活跃</small></h3>
+      <canvas id="c_out_retain"></canvas>
+      <div class="insight">月内最高留存率 <b>72.8%</b>（03月第4周），最低 <b>63.1%</b>（03月第5周）；最新值 <b>63.1%</b>（环比 -13.3%）。</div>
+    </div>
+
+    <div class="chart-card">
+      <h3>订单 → 收发货转化率（%）</h3>
+      <canvas id="c_out_convert"></canvas>
+      <div class="insight">最新值 <b>73.6%</b>（03月第5周），环比 <b>-1.6%</b>；月内整体相对平稳。</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 协同任务 -->
+<div class="section">
+  <div class="section-title green">🤝 协同任务</div>
+  <div class="chart-grid three">
+
+    <div class="chart-card">
+      <h3>客户规模趋势（人数）</h3>
+      <canvas id="c_col_scale"></canvas>
+      <div class="insight green">最新值 <b>96</b>（03月第5周），环比 <b>-9.4%</b>；月内整体上升约 6%。 创建任务客户：最新值 <b>232</b>（03月第5周），环比 <b>-9.0%</b>；月内整体上升约 9%。</div>
+    </div>
+
+    <div class="chart-card">
+      <h3>客户留存率趋势（%）<small style="color:#aaa;font-weight:400"> · 上周活跃→本周仍活跃</small></h3>
+      <canvas id="c_col_retain"></canvas>
+      <div class="insight green">月内最高留存率 <b>67.7%</b>（03月第3周），最低 <b>61.3%</b>（03月第5周）；最新值 <b>61.3%</b>（环比 -2.7%）。</div>
+    </div>
+
+    <div class="chart-card">
+      <h3>活跃转换率 & 工单关联比例（%）</h3>
+      <canvas id="c_col_rate"></canvas>
+      <div class="insight green">活跃转换率：最新值 <b>41.4%</b>（03月第5周），环比 <b>-0.5%</b>；月内整体相对平稳。 工单关联：最新值 <b>15.9%</b>（03月第5周），环比 <b>-0.6%</b>；月内整体下降约 16%。</div>
+    </div>
+
+  </div>
+</div>
+
+<p style="font-size:11px;color:#bbb;margin-top:8px">
+  * 覆盖客户 = 既有订单又有收发记录；协同活跃客户 = 一周内≥2天创建任务；留存率第1周无上周基准显示为空。<br>
+  * 数据来源：Archery / 小工单生产库（ADB_01/02/03 三实例加总）
+</p>
+
+<script>
+const labels = ["03月第1周", "03月第2周", "03月第3周", "03月第4周", "03月第5周"];
+
+// 颜色
+const BLUE   = '#4361ee';
+const LBLUE  = '#7b8cde';
+const GREEN  = '#2d9d78';
+const LGREEN = '#5dc8a0';
+const ORANGE = '#f77f00';
+
+function mkLine(label, data, color, dash=[]) {
+  return {
+    label, data,
+    borderColor: color, backgroundColor: color+'22',
+    pointBackgroundColor: color, pointRadius: 5, pointHoverRadius: 7,
+    borderWidth: 2.5, borderDash: dash, tension: 0.35, fill: false, spanGaps: true,
+  };
+}
+
+const baseOpts = (yLabel) => ({
+  responsive: true,
+  interaction: { mode:'index', intersect:false },
+  plugins: {
+    legend: { position:'top', labels:{ font:{size:12}, padding:14 } },
+    tooltip: { padding:10, cornerRadius:8 },
+  },
+  scales: {
+    x: { grid:{color:'#f2f2f2'}, ticks:{font:{size:12}} },
+    y: { grid:{color:'#f2f2f2'}, ticks:{font:{size:12}}, title:{display:!!yLabel,text:yLabel}, beginAtZero:false },
+  },
+});
+
+const pctOpts = (yLabel) => {
+  const o = baseOpts(yLabel);
+  o.scales.y.min = 0; o.scales.y.max = 100;
+  o.scales.y.ticks.callback = v => v + '%';
+  o.plugins.tooltip.callbacks = { label: ctx => ctx.dataset.label+': '+(ctx.parsed.y??'-')+'%' };
+  return o;
+};
+
+// 委外规模
+new Chart(document.getElementById('c_out_scale'), {
+  type:'line', data:{ labels,
+    datasets:[
+      mkLine('覆盖客户数（订单+收发）', [568, 599, 596, 645, 595], BLUE),
+      mkLine('委外订单客户数',          [771, 821, 830, 862, 808], LBLUE, [6,3]),
+    ]
+  }, options: baseOpts('人数'),
+});
+
+// 委外留存率
+new Chart(document.getElementById('c_out_retain'), {
+  type:'line', data:{ labels,
+    datasets:[
+      mkLine('委外客户留存率', [null, 68.66, 69.28, 72.82, 63.10], BLUE),
+    ]
+  }, options: pctOpts('%'),
+});
+
+// 委外转化率
+new Chart(document.getElementById('c_out_convert'), {
+  type:'line', data:{ labels,
+    datasets:[
+      mkLine('订单→收发货转化率', [73.67, 72.96, 71.81, 74.83, 73.64], BLUE),
+    ]
+  }, options: pctOpts('%'),
+});
+
+// 协同规模
+new Chart(document.getElementById('c_col_scale'), {
+  type:'line', data:{ labels,
+    datasets:[
+      mkLine('活跃客户数（≥2天任务）', [95, 96, 100, 106, 96], GREEN),
+      mkLine('创建任务客户数（≥1天）', [231, 217, 250, 255, 232],   LGREEN, [6,3]),
+    ]
+  }, options: baseOpts('人数'),
+});
+
+// 协同留存率
+new Chart(document.getElementById('c_col_retain'), {
+  type:'line', data:{ labels,
+    datasets:[
+      mkLine('协同客户留存率', [null, 64.21, 67.71, 63.00, 61.32], GREEN),
+    ]
+  }, options: pctOpts('%'),
+});
+
+// 协同转换率 & 工单关联
+new Chart(document.getElementById('c_col_rate'), {
+  type:'line', data:{ labels,
+    datasets:[
+      mkLine('活跃客户转换率（2天/全体）', [41.13, 44.24, 40.00, 41.57, 41.38], GREEN),
+      mkLine('工单关联创建比例',           [18.85, 19.22, 19.73, 16.04, 15.95],   ORANGE, [4,3]),
+    ]
+  }, options: pctOpts('%'),
+});
+</script>
+</body>
+</html>
