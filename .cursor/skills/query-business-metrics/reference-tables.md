@@ -3,7 +3,7 @@
 > 新确认的表结构或指标口径：在 `SKILL.md` 工作流末尾要求追加一行到本节对应表。  
 > **性能**：新建/改写 SQL 须遵守 `SKILL.md`「查询性能与语句选择」——优先最快且口径正确的写法。
 
-**仓库目录**：**`查询指标/`** 仅存查询产出的 **`.md` / `.json`**；财年类拉数脚本在 **`query-business-metrics/scripts/`**（与 `weekly-core-metrics/scripts` 并列，产出仍写入仓库根 `查询指标/`）。
+**仓库目录**：**`查询指标/`** 存每次指标查询产出；**须有 `.md`**（口径 + 结果），**可选 `.json`** 等与指标同名的配套文件。财年类拉数脚本在 **`query-business-metrics/scripts/`**（与 `weekly-core-metrics/scripts` 并列，产出仍写入仓库根 `查询指标/`）。
 
 ## Archery 接口与鉴权
 
@@ -65,7 +65,11 @@
 - Trace：`orgId`（camelCase）、`dat`、`event`、`eventValues`（JSON）
 - ADB 业务表：多为 `org_id`、`deleted_at`、`created_at`、`updated_at`
 
-![1775625001238](image/reference-tables/1775625001238.png)![1775625003277](image/reference-tables/1775625003277.png)![1775625008724](image/reference-tables/1775625008724.png)![1775625009600](image/reference-tables/1775625009600.png)![1775625015102](image/reference-tables/1775625015102.png)![1775625024118](image/reference-tables/1775625024118.png)![1775625024924](image/reference-tables/1775625024924.png)![1775625025207](image/reference-tables/1775625025207.png)![1775625034561](image/reference-tables/1775625034561.png)![1775625035324](image/reference-tables/1775625035324.png)![1775625035522](image/reference-tables/1775625035522.png)![1775625035672](image/reference-tables/1775625035672.png)![1775625035847](image/reference-tables/1775625035847.png)![1775625036168](image/reference-tables/1775625036168.png)![1775625036015](image/reference-tables/1775625036015.png)![1775625044973](image/reference-tables/1775625044973.png)![1775625045476](image/reference-tables/1775625045476.png)![1775625045659](image/reference-tables/1775625045659.png)![1775625045836](image/reference-tables/1775625045836.png)![1775625046186](image/reference-tables/1775625046186.png)![1775625046362](image/reference-tables/1775625046362.png)![1775625046524](image/reference-tables/1775625046524.png)![1775625046698](image/reference-tables/1775625046698.png)![1775625049712](image/reference-tables/1775625049712.png)![1775625050764](image/reference-tables/1775625050764.png)![1775625050899](image/reference-tables/1775625050899.png)![1775625057541](image/reference-tables/1775625057541.png)![1775625057799](image/reference-tables/1775625057799.png)![1775625057984](image/reference-tables/1775625057984.png)![1775625058173](image/reference-tables/1775625058173.png)![1775625058338](image/reference-tables/1775625058338.png)![1775625058538](image/reference-tables/1775625058538.png)![1775625061140](image/reference-tables/1775625061140.png)![1775625061349](image/reference-tables/1775625061349.png)![1775625061519](image/reference-tables/1775625061519.png)![1775625134345](image/reference-tables/1775625134345.png)## 公司财年（主口径）
+### 表结构截图（按需）
+
+本仓库 **不再内置** Archery 表结构截图。需要对照列名/类型时：由使用者在对话中 **贴图或附件**，或在本地保存后指明路径；确认口径后把文字结论写回本节（业务 ↔ 表 ↔ 字段），避免依赖过期截图。
+
+## 公司财年（主口径）
 
 **定义（业务口述对齐）**：**一个财年** = 从 **上一自然年的 3 月最后一天之后**起算，至 **本自然年的 3 月最后一天**止。落地为 **自然日闭区间**：
 
@@ -103,4 +107,5 @@
 |------|------|
 | `query-business-metrics/scripts/query_fy24_fy25_metrics.py` | FY 窗口：TV/报表/智能/协同/委外等指标；结果写入 `查询指标/` |
 | `query-business-metrics/scripts/query_fy25_filter_info_defaults.py` | 筛选 `defaultValueInfo` 工厂数；结果写入 `查询指标/` |
+| `.cursor/skills/trend-chart/scripts/generate_fy25_usage_report.py` | FY2025（2025-04-01～2026-03-31）五模块**月度**使用趋势 HTML；产出在 `图表/`，缓存与样式见同 skill |
 | `.cursor/skills/weekly-core-metrics/scripts/generate_weekly_report.py` | 周报委外 + 协同 |

@@ -66,6 +66,8 @@ description: >-
 
 每确认一张新表或新口径：**在 [reference-tables.md](reference-tables.md) 增补一行**（业务 ↔ 表 ↔ 关键字段/条件），避免下次从零推断。
 
+**表结构对照图**：仓库**不内置** Archery 截图；需要时用者在对话中**提供**截图或路径，确认后将列名与口径**写回** `reference-tables.md` 正文（勿长期依赖外链图片）。
+
 ## 必读域知识摘要
 
 更全的映射、实例名、合并规则、已有脚本列表见 **[reference-tables.md](reference-tables.md)**。
@@ -79,4 +81,4 @@ description: >-
 
 - Token 易失效：鉴权失败时让用户更新 **`weekly-core-metrics/scripts/config.json`**（及脚本内 `CONFIG['auth']` 若未改为读配置）中的 `csrftoken` / `sessionid`。
 - `trace_log_dp` **保留周期有限**；历史财年可能没有埋点，需说明「不可得」或换业务表口径。
-- 产出若落盘：**指标类查询结果**默认写在仓库 **`查询指标/`**；拉数脚本在 **`query-business-metrics/scripts/`**（除非另行说明）。
+- 产出若落盘：**指标类查询结果**写在仓库 **`查询指标/`**，且 **每次须保存 Markdown（`.md`）**（含口径说明 + 结果表/要点）；若同时有结构化产物可并存 **`.json`**。拉数脚本在 **`query-business-metrics/scripts/`**（除非另行说明）；**新脚本/改脚本**应在 `查询指标/` 写出与指标同名的 **`.md`**。

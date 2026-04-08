@@ -1,0 +1,19 @@
+{
+  "时间窗_FY25代表周": [
+    "2026-03-23",
+    "2026-03-29"
+  ],
+  "说明": {
+    "默认值判定": "filter_condition 数组中任一项 valueInfo.conditionValue 或 conditionName 为非空数组。",
+    "适用范围": "自定义报表 dashboard_type=1；智能看板 dashboard_type=3。",
+    "与筛选组件关系": "图表组件也可能使用 filter_condition；若需仅限筛选器请按 chart_type 再过滤。"
+  },
+  "自定义报表_dashboard_type1": {
+    "全量_工厂数": 4368,
+    "FY25代表周内有更新_工厂数": 176
+  },
+  "智能看板_dashboard_type3": {
+    "全量_工厂数": 15888,
+    "FY25代表周内有更新_工厂数": 400
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "指标说明": "多维进销存报表 URL 含 multiInventoryReport，PageView",
+  "数据源": "小工单_阿里云_prod_starrocks / liteman.trace_log_dp",
+  "条件": "event='PageView' AND get_json_string(eventValues,'$.url') LIKE '%multiInventoryReport%'",
+  "指标": {
+    "功能上线至今累计访问工厂数": {
+      "数值": 3651,
+      "口径": "COUNT(DISTINCT orgId)，全表可查区间",
+      "库内最早dat": "2026-01-22",
+      "库内最晚dat_本次查询": "2026-04-08",
+      "业务含义": "覆盖广度：至少使用过一次（有 PageView）的工厂数"
+    },
+    "日均PV_以2026年3月代替近30天": {
+      "窗口": "2026-03-01 ~ 2026-03-31",
+      "3月总PV": 21574,
+      "自然日天数": 31,
+      "日均PV": 695.9354838709677,
+      "日均PV_四舍五入1位小数": 695.9,
+      "业务含义": "功能活跃度：按自然日平均的页面访问量"
+    }
+  }
+}

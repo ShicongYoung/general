@@ -1,0 +1,128 @@
+{
+  "output_dir": "图表",
+  "cache_file": ".cursor/skills/trend-chart/cache/fy25_usage_generic.json",
+  "write_md_to": "查询指标/FY2025_功能使用年度总结_通用图表版.md",
+  "periods": {
+    "kind": "month",
+    "start": "2025-04-01",
+    "end": "2026-03-31"
+  },
+  "series": [
+    {
+      "name": "自定义报表_覆盖工厂数",
+      "source": { "kind": "starrocks", "tb_name": "trace_log_dp" },
+      "key": "c",
+      "sql": "SELECT COUNT(DISTINCT orgId) AS c FROM trace_log_dp WHERE dat BETWEEN DATE '{{start}}' AND DATE '{{end}}' AND event='PageView' AND get_json_string(eventValues,'$.url') LIKE '%/customDashboard/detail%'"
+    },
+    {
+      "name": "自定义报表_PV",
+      "source": { "kind": "starrocks", "tb_name": "trace_log_dp" },
+      "key": "c",
+      "sql": "SELECT COUNT(1) AS c FROM trace_log_dp WHERE dat BETWEEN DATE '{{start}}' AND DATE '{{end}}' AND event='PageView' AND get_json_string(eventValues,'$.url') LIKE '%/customDashboard/detail%'"
+    },
+    {
+      "name": "多维进销存_覆盖工厂数",
+      "source": { "kind": "starrocks", "tb_name": "trace_log_dp" },
+      "key": "c",
+      "sql": "SELECT COUNT(DISTINCT orgId) AS c FROM trace_log_dp WHERE dat BETWEEN DATE '{{start}}' AND DATE '{{end}}' AND event='PageView' AND get_json_string(eventValues,'$.url') LIKE '%multiInventoryReport%'"
+    },
+    {
+      "name": "多维进销存_PV",
+      "source": { "kind": "starrocks", "tb_name": "trace_log_dp" },
+      "key": "c",
+      "sql": "SELECT COUNT(1) AS c FROM trace_log_dp WHERE dat BETWEEN DATE '{{start}}' AND DATE '{{end}}' AND event='PageView' AND get_json_string(eventValues,'$.url') LIKE '%multiInventoryReport%'"
+    },
+    {
+      "name": "TV_覆盖工厂数",
+      "source": { "kind": "starrocks", "tb_name": "trace_log_dp" },
+      "key": "c",
+      "sql": "SELECT COUNT(DISTINCT orgId) AS c FROM trace_log_dp WHERE dat BETWEEN DATE '{{start}}' AND DATE '{{end}}' AND event='tv-device-info'"
+    },
+    {
+      "name": "协同任务_覆盖工厂数",
+      "source": { "kind": "adb", "tb_name": "dt_collaborative_task" },
+      "key": "c",
+      "sql": "SELECT COUNT(DISTINCT org_id) AS c FROM dt_collaborative_task WHERE created_at::date BETWEEN DATE '{{start}}' AND DATE '{{end}}'"
+    },
+    {
+      "name": "委外管理_收货工厂数",
+      "source": { "kind": "adb", "tb_name": "dt_outsource_post" },
+      "key": "c",
+      "sql": "SELECT COUNT(DISTINCT org_id) AS c FROM dt_outsource_post WHERE created_at::date BETWEEN DATE '{{start}}' AND DATE '{{end}}' AND post_type_name='收货' AND COALESCE(deleted_at,0)=0"
+    }
+  ],
+  "report": {
+    "title": "FY2025 功能使用年度总结（通用图表技能示例）",
+    "subtitle": "本页由「配置驱动」生成，样式参考 周报/趋势图表-3月.html。指标为示例：覆盖工厂数与 PV；可按业务继续扩展 series 与 charts。",
+    "output_html": "FY2025_功能使用年度总结_通用图表版.html",
+    "sections": [
+      {
+        "title": "📊 自定义报表（示例：覆盖 & PV）",
+        "theme": "teal",
+        "grid": "three",
+        "charts": [
+          {
+            "id": "c_custom_cov",
+            "title": "覆盖工厂数（按月）",
+            "kind": "line",
+            "y_label": "工厂数",
+            "datasets": [{ "series": "自定义报表_覆盖工厂数", "label": "覆盖工厂数", "value_kind": "int" }],
+            "insight": { "type": "peak_trend", "series": "自定义报表_覆盖工厂数", "fmt": "int" }
+          },
+          {
+            "id": "c_custom_pv",
+            "title": "PV（按月）",
+            "kind": "line",
+            "y_label": "PV",
+            "datasets": [{ "series": "自定义报表_PV", "label": "PV", "value_kind": "int" }],
+            "insight": { "type": "peak_trend", "series": "自定义报表_PV", "fmt": "int" }
+          },
+          {
+            "id": "c_custom_dual",
+            "title": "覆盖（线）& PV（柱）",
+            "kind": "dual_bar_line",
+            "datasets": [
+              { "series": "自定义报表_PV", "label": "PV", "value_kind": "int", "axis": "y" },
+              { "series": "自定义报表_覆盖工厂数", "label": "覆盖工厂数", "value_kind": "int", "axis": "y1" }
+            ],
+            "insight": { "type": "peak_trend", "series": "自定义报表_覆盖工厂数", "fmt": "int" }
+          }
+        ]
+      },
+      {
+        "title": "📦 多维进销存（示例：覆盖 & PV）",
+        "theme": "blue",
+        "grid": "three",
+        "charts": [
+          {
+            "id": "c_multi_cov",
+            "title": "覆盖工厂数（按月）",
+            "kind": "line",
+            "y_label": "工厂数",
+            "datasets": [{ "series": "多维进销存_覆盖工厂数", "label": "覆盖工厂数", "value_kind": "int" }],
+            "insight": { "type": "peak_trend", "series": "多维进销存_覆盖工厂数", "fmt": "int" }
+          },
+          {
+            "id": "c_multi_pv",
+            "title": "PV（按月）",
+            "kind": "line",
+            "y_label": "PV",
+            "datasets": [{ "series": "多维进销存_PV", "label": "PV", "value_kind": "int" }],
+            "insight": { "type": "peak_trend", "series": "多维进销存_PV", "fmt": "int" }
+          },
+          {
+            "id": "c_multi_dual",
+            "title": "覆盖（线）& PV（柱）",
+            "kind": "dual_bar_line",
+            "datasets": [
+              { "series": "多维进销存_PV", "label": "PV", "value_kind": "int", "axis": "y" },
+              { "series": "多维进销存_覆盖工厂数", "label": "覆盖工厂数", "value_kind": "int", "axis": "y1" }
+            ],
+            "insight": { "type": "peak_trend", "series": "多维进销存_覆盖工厂数", "fmt": "int" }
+          }
+        ]
+      }
+    ]
+  }
+}
+

@@ -1,69 +1,78 @@
 ---
-name: trend-chart
-description: 生成核心指标趋势图表 HTML，支持自定义时间范围（近N周、近N个月、指定起止日期）。Use when the user asks for 趋势图、指标趋势、近X个月、近X周、半年趋势、图表分析、trend chart。
+name: business-charts
+description: 配置驱动生成任意业务指标图表 HTML（周度/月度趋势、对比图、双轴图），自动附洞察并落盘到「图表/」（可选写「查询指标/」索引）。Use when you need 业务图表, 趋势图, 周/月报图表, 年度总结图表, 指标可视化, chart, trend chart, 或「根据 SQL 生成图」。
 ---
 
-# 核心指标趋势图表
+# 通用业务图表（trend-chart 升级版）
 
 ## 适用场景
 
-当用户需要查看一段时间内核心指标的趋势变化时，执行本技能。输出一个 HTML 文件，包含委外管理、协同任务两大分区，共 6 张折线图，每图下方附自动洞察。
+当用户需要生成**任意业务指标**的趋势图/对比图（周度、月度等）并输出 HTML 时，执行本技能。
+
+- **输出**：HTML **仅**写入仓库根目录 **`图表/`**（最终产物）；不在 `图表/` 放脚本、缓存或 `vendor`。
+- **样式模板**：浅色主题 CSS 见 **`templates/chart-report-light.css`**（生成脚本读入后写入 HTML `<style>`，或与页面结构注释一并维护）。
+- **结构约定**：每个 `<canvas>` 外包一层 **`<div class="chart-body">`**；Chart.js 使用 **`maintainAspectRatio: false`**，由 `.chart-body` 固定高度，避免 y 轴区域被压扁。
+- **Chart.js**：UMD 文件在 **`vendor/chart.umd.min.js`**；生成 HTML 时**内联**到 `<script>`，避免 `file://` 或缺失相对路径导致空白图。
+- **缓存**：示例与 FY 拉数缓存放在 **`cache/`**（可在配置 JSON 里用 `.cursor/skills/trend-chart/cache/xxx.json`）。
+- **配置驱动**：通过 JSON 定义「时间分段」「数据源」「SQL」「图表类型」「洞察规则」。
+- **FY2025 多模块年度页**：**`scripts/generate_fy25_usage_report.py`** → `图表/FY2025_功能使用年度总结.html`（原始数据 **`cache/fy25_usage_raw.json`**）。
 
 ## 支持的时间范围表达
 
 | 用户说法 | 对应参数 |
 |---------|---------|
-| 近4周（默认） | 不传参数 |
-| 近12周 / 近3个月 | `--recent-weeks 12` 或 `--recent-months 3` |
-| 近半年 | `--recent-months 6` |
-| 近1年 | `--recent-months 12` |
-| 指定起止日期 | `--start 2026-01-01 --end 2026-06-30` |
-| 指定起始到今天 | `--start 2026-01-01` |
+| 周度 / 月度 | 配置 `periods.kind = week / month` |
+| 指定起止日期 | 配置 `periods.start / periods.end`（YYYY-MM-DD） |
+| 周界（周一~周日） | 周度配置 `periods.week_start=0`（默认周一） |
 
 ## 执行步骤
 
-1. 根据用户描述的时间范围，选择对应参数
-2. 运行脚本：
-   ```bash
-   python3 .cursor/skills/weekly-core-metrics/scripts/generate_trend_chart.py [参数]
-   ```
-3. 脚本自动输出 HTML 到 `周报/趋势图表-{范围描述}.html`
-4. 告知用户文件路径，并基于脚本打印的汇总表做简要分析
+1. 新建/修改一份图表配置 JSON（参考示例配置）
+2. 运行脚本生成 HTML：
+
+```bash
+python3 .cursor/skills/trend-chart/scripts/generate_business_charts.py \
+  --config .cursor/skills/trend-chart/scripts/chart-config.fy25-usage.example.json
+```
+
+3. 若 Archery 较慢或 token 失效：先更新 `.cursor/skills/weekly-core-metrics/scripts/config.json`，或使用 `--offline` 仅用缓存渲染：
+
+```bash
+python3 .cursor/skills/trend-chart/scripts/generate_business_charts.py \
+  --config .cursor/skills/trend-chart/scripts/chart-config.fy25-usage.example.json \
+  --offline
+```
+
+```bash
+# FY2025 年度总结（多图），离线仅渲染
+python3 .cursor/skills/trend-chart/scripts/generate_fy25_usage_report.py --offline
+```
 
 ## 典型命令示例
 
 ```bash
-# 近3个月
-python3 .cursor/skills/weekly-core-metrics/scripts/generate_trend_chart.py --recent-months 3
+# FY2025 示例（配置驱动）
+python3 .cursor/skills/trend-chart/scripts/generate_business_charts.py \
+  --config .cursor/skills/trend-chart/scripts/chart-config.fy25-usage.example.json
 
-# 近半年
-python3 .cursor/skills/weekly-core-metrics/scripts/generate_trend_chart.py --recent-months 6
-
-# 近12周
-python3 .cursor/skills/weekly-core-metrics/scripts/generate_trend_chart.py --recent-weeks 12
-
-# 指定自定义范围
-python3 .cursor/skills/weekly-core-metrics/scripts/generate_trend_chart.py --start 2026-01-01 --end 2026-06-30
-
-# 指定输出路径
-python3 .cursor/skills/weekly-core-metrics/scripts/generate_trend_chart.py --recent-months 3 --output 周报/Q1趋势.html
+# 离线重渲（不请求 Archery）
+python3 .cursor/skills/trend-chart/scripts/generate_business_charts.py \
+  --config .cursor/skills/trend-chart/scripts/chart-config.fy25-usage.example.json \
+  --offline
 ```
 
 ## 图表内容
 
-### 委外管理（蓝色区）
-- **客户规模趋势**：覆盖客户数（有订单+有收发）+ 委外订单客户数
-- **客户留存率趋势**：上周活跃→本周仍活跃的比例
-- **订单→收发货转化率**：覆盖客户数 / 订单客户数
+由配置文件 `report.sections[].charts[]` 决定。支持（先做常用三类）：
 
-### 协同任务（绿色区）
-- **客户规模趋势**：活跃客户数（≥2天创建任务）+ 创建任务客户数
-- **客户留存率趋势**：上周活跃→本周仍活跃的比例
-- **活跃转换率 & 工单关联比例**：双折线
+- `line`：折线图
+- `pct_line`：百分比折线图（0~100%）
+- `dual_bar_line`：双轴（柱 + 线）
 
 ## 注意事项
 
-- 数据来源：Archery / 小工单生产库（ADB_01/02/03 三实例加总）
-- 留存率计算：使用标量 COUNT SQL（不依赖 limit_num），第一周无上周基准显示为空
-- 若范围超过半年（>26周），查询时间较长（约每周5秒），请耐心等待
+- 数据来源：Archery / StarRocks（`trace_log_dp`）与 ADB（`ADB_01/02/03`）
+- **SQL 限制**：Archery 可能拦截部分语法（如某些 CTE / FILTER / `COUNT(*)`）。推荐用标量 `COUNT(1)`、子查询写法。
 - Token 失效时更新 `.cursor/skills/weekly-core-metrics/scripts/config.json` 中的 `csrftoken` / `sessionid`
+- **多图页维护**：在 HTML 中用注释区分 **页头 / KPI / 各业务模块 / 脚本**；样式与图区高度以模板为准，避免再对 `canvas` 使用过小 `max-height`。
+- 索引：可在 `查询指标/` 写同名 `.md`（配置 `write_md_to`）。
