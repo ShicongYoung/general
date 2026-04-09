@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "stylesheet": "chart-report-light.css",
+  "page": {
+    "title": "FY2025 功能使用年度总结",
+    "subtitle_lines": [
+      "时间粒度：<b>自然月</b>（财年 2025-04-01～2026-03-31）。布局为<b>单列</b>，便于通读；相关指标在一张图上用双轴组合展示。",
+      "五块业务：自定义报表、多维进销存、TV、协同任务、委外管理。指标口径见 <code>查询指标/FY2025_功能使用年度总结_口径.md</code>。"
+    ]
+  },
+  "kpi": [
+    { "title": "自定义报表 · 活跃工厂（末月）", "bind": "custom.act", "format": "int" },
+    { "title": "进销存报表 · 活跃工厂（末月）", "bind": "multi.act", "format": "int" },
+    { "title": "TV · 高频在线工厂（末月）", "bind": "tv.ge10", "format": "int" },
+    { "title": "协同 · 高活跃工厂（末月）", "bind": "collab.act", "format": "int" },
+    { "title": "委外 · 高活跃订单厂（末月，建单≥8天）", "bind": "outsource.orders", "format": "int" }
+  ],
+  "sections": [
+    {
+      "theme": "teal",
+      "heading": "📊 自定义报表",
+      "grid": "one",
+      "charts": [
+        {
+          "id": "c_custom_pv_act",
+          "title": "自定义报表 · 流量与活跃工厂",
+          "root_type": "bar",
+          "y_left": "PV（次）",
+          "y_right": "活跃工厂数",
+          "insight_lead": "柱状为当月页面浏览总量，折线为「月内访问 ≥8 天」的活跃工厂数；二者同向走强通常表示渗透与深度一齐改善。",
+          "datasets": [
+            { "bind": "custom.pv", "label": "PV", "shape": "bar", "format": "int", "role": "primary" },
+            { "bind": "custom.act", "label": "活跃工厂", "shape": "line", "y_axis": "y1", "format": "int", "role": "contrast" }
+          ]
+        },
+        {
+          "id": "c_custom_ret",
+          "title": "自定义报表 · 活跃留存",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "留存（%）",
+          "insight_lead": "上月活跃工厂在本月仍达活跃阈值的比例，用于观察是否持续使用而非单月冲刺。",
+          "datasets": [
+            { "bind": "custom.ret", "label": "月留存", "shape": "line", "format": "ratio", "role": "primary" }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "blue",
+      "heading": "📦 多维进销存报表",
+      "grid": "one",
+      "charts": [
+        {
+          "id": "c_multi_pv_act",
+          "title": "进销存报表 · 流量与活跃工厂",
+          "root_type": "bar",
+          "y_left": "PV（次）",
+          "y_right": "活跃工厂数",
+          "insight_lead": "活跃定义为月内访问 ≥4 天；与 PV 同图便于对照需求弹性与覆盖面。",
+          "datasets": [
+            { "bind": "multi.pv", "label": "PV", "shape": "bar", "format": "int", "role": "primary" },
+            { "bind": "multi.act", "label": "活跃工厂", "shape": "line", "y_axis": "y1", "format": "int", "role": "contrast" }
+          ]
+        },
+        {
+          "id": "c_multi_ret",
+          "title": "进销存报表 · 活跃留存",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "留存（%）",
+          "insight_lead": "留存波动可结合月结节奏或版本变更排查。",
+          "datasets": [
+            { "bind": "multi.ret", "label": "月留存", "shape": "line", "format": "ratio", "role": "primary" }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "orange",
+      "heading": "📺 TV 版",
+      "grid": "one",
+      "charts": [
+        {
+          "id": "c_tv_ge10_days",
+          "title": "TV · 高频工厂与户均在线天数",
+          "root_type": "line",
+          "y_left": "高频工厂数（≥10 次/月）",
+          "y_right": "户均活跃天数",
+          "insight_lead": "左轴为心跳次数达标的工厂数，右轴为有至少一次 TV 事件的工厂的平均活跃天数，兼顾「量级」与「粘性」。",
+          "datasets": [
+            { "bind": "tv.ge10", "label": "高频工厂", "shape": "line", "format": "int", "role": "primary" },
+            { "bind": "tv.avg_days", "label": "户均活跃天数", "shape": "line", "y_axis": "y1", "format": "float2", "role": "contrast" }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "green",
+      "heading": "🤝 协同任务",
+      "grid": "one",
+      "charts": [
+        {
+          "id": "c_collab_tasks_act",
+          "title": "协同 · 新建任务量与活跃工厂",
+          "root_type": "bar",
+          "y_left": "任务条数",
+          "y_right": "活跃工厂数",
+          "insight_lead": "任务量为三分片合计；活跃厂为月内创建任务覆盖的 distinct 自然日 ≥8 天的工厂。任务涨而厂跌时需关注头部集中或未结堆积。",
+          "datasets": [
+            { "bind": "collab.tasks", "label": "新建任务", "shape": "bar", "format": "int", "role": "primary" },
+            { "bind": "collab.act", "label": "活跃工厂", "shape": "line", "y_axis": "y1", "format": "int", "role": "contrast" }
+          ]
+        },
+        {
+          "id": "c_collab_ret_assoc",
+          "title": "协同 · 活跃留存与关联工单占比",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "占比（%）",
+          "insight_lead": "留存基于活跃工厂集合；关联占比为含 associate_id 的任务占比，反映协同与主单据的衔接程度。",
+          "datasets": [
+            { "bind": "collab.ret", "label": "月留存", "shape": "line", "format": "ratio", "role": "primary" },
+            { "bind": "collab.assoc", "label": "关联任务占比", "shape": "line", "format": "ratio", "role": "contrast" }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "purple",
+      "heading": "🧾 委外管理",
+      "grid": "one",
+      "charts": [
+        {
+          "id": "c_out_combo",
+          "title": "委外 · 高活跃订单厂、深度收货与转化率",
+          "root_type": "bar",
+          "y_left": "工厂数",
+          "y_right": "转化率（%）",
+          "insight_lead": "订单厂口径：<b>当月创建订单的 distinct 自然日 ≥8</b>（跨分片合并日期）。柱为订单厂与「收货 ≥8 天」厂，折线为转化率。",
+          "datasets": [
+            { "bind": "outsource.orders", "label": "高活跃订单厂（建单≥8天）", "shape": "bar", "format": "int", "role": "primary" },
+            { "bind": "outsource.recv8", "label": "深度收货厂（≥8天）", "shape": "bar", "format": "int", "role": "secondary" },
+            { "bind": "outsource.convert", "label": "转化率", "shape": "line", "y_axis": "y1", "format": "ratio_chart_pct", "role": "contrast" }
+          ]
+        },
+        {
+          "id": "c_out_ret_avg",
+          "title": "委外 · 订单客户留存与户均订单",
+          "root_type": "line",
+          "use_pct_scale": false,
+          "y_left": "留存（%）",
+          "y_right": "户均订单数",
+          "insight_lead": "留存基于高活跃订单厂集合的跨月重合；户均订单 = 当月订单总条数 ÷ 高活跃订单厂数。",
+          "datasets": [
+            { "bind": "outsource.ret", "label": "月留存", "shape": "line", "format": "ratio", "role": "primary" },
+            { "bind": "outsource.avg_orders", "label": "户均订单", "shape": "line", "y_axis": "y1", "format": "float2", "role": "contrast" }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer_note": "数据：<code>查询指标/FY2025_chart_data.json</code>（按需更新）。渲染：<code>render_dashboard_html.py</code> + 本 manifest。取数口径见 <code>查询指标/FY2025_功能使用年度总结_口径.md</code>；Archery 通用入口 <code>query-business-metrics/scripts/run_archery_query.py</code>。"
+}

@@ -1,7 +1,6 @@
 {
   "output_dir": "图表",
-  "cache_file": ".cursor/skills/trend-chart/cache/fy25_usage_generic.json",
-  "write_md_to": "查询指标/FY2025_功能使用年度总结_通用图表版.md",
+  "cache_file": ".cursor/skills/business-charts/cache/example_multiseries_monthly.json",
   "periods": {
     "kind": "month",
     "start": "2025-04-01",
@@ -52,9 +51,9 @@
     }
   ],
   "report": {
-    "title": "FY2025 功能使用年度总结（通用图表技能示例）",
-    "subtitle": "本页由「配置驱动」生成，样式参考 周报/趋势图表-3月.html。指标为示例：覆盖工厂数与 PV；可按业务继续扩展 series 与 charts。",
-    "output_html": "FY2025_功能使用年度总结_通用图表版.html",
+    "title": "业务指标图表示例（配置驱动）",
+    "subtitle": "本页由 generate_business_charts.py 根据本配置与缓存生成。series 为示例 SQL，可按业务替换；离线时可沿用 cache/example_multiseries_monthly.json。",
+    "output_html": "业务图表_配置驱动示例.html",
     "sections": [
       {
         "title": "📊 自定义报表（示例：覆盖 & PV）",
@@ -91,7 +90,7 @@
       },
       {
         "title": "📦 多维进销存（示例：覆盖 & PV）",
-        "theme": "blue",
+        "theme": "indigo",
         "grid": "three",
         "charts": [
           {
@@ -125,4 +124,3 @@
     ]
   }
 }
-

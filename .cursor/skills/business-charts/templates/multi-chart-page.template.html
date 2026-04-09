@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- 多模块图表页结构参考：用于本地预览 business-charts 版式。
+       正式 HTML 由 render_dashboard_html.py / generate_business_charts.py 生成：内联 Chart.js 与 chart-report-light.css（或其它 templates/*.css）。 -->
+  <title>多模块图表页（business-charts 结构模板）</title>
+  <script src="../vendor/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="chart-report-light.css">
+</head>
+<body>
+
+<h1>{{ report_title }} — 模板预览</h1>
+<p class="subtitle">结构：多 <code>section</code> → <code>section-title.*</code>（渐变标题条）→ <code>chart-grid three</code> → <code>chart-card.tone-*</code> → <code>chart-body</code> → <code>canvas</code> → <code>insight.*</code>。下方为占位图表示例配色。</p>
+
+<div class="summary-row">
+  <div class="kpi accent-teal"><div class="title">示例 KPI</div><div class="val">1,234</div><div class="sub">周环比 +3%</div></div>
+  <div class="kpi accent-coral"><div class="title">示例 KPI</div><div class="val">567</div><div class="sub">工厂</div></div>
+  <div class="kpi accent-amber"><div class="title">示例 KPI</div><div class="val">89%</div><div class="sub">采纳率</div></div>
+</div>
+
+<div class="section">
+  <div class="section-title teal">📊 模块 A（teal 标题 + 三款卡片强调色）</div>
+  <div class="chart-grid three">
+    <div class="chart-card tone-teal">
+      <h3>折线（主色 1）</h3>
+      <div class="chart-body"><canvas id="tpl_a1"></canvas></div>
+      <div class="insight teal">示例洞察：<b>峰值</b>、低谷、末期。</div>
+    </div>
+    <div class="chart-card tone-indigo">
+      <h3>折线（主色 2）</h3>
+      <div class="chart-body"><canvas id="tpl_a2"></canvas></div>
+      <div class="insight indigo">配色与分区可独立组合。</div>
+    </div>
+    <div class="chart-card tone-coral">
+      <h3>柱 + 线（双轴）</h3>
+      <div class="chart-body tall"><canvas id="tpl_a3"></canvas></div>
+      <div class="insight coral">双轴图可使用 <code>.chart-body.tall</code> 增高。</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title rose">📦 模块 B（rose / mint / amber 标题样式示例）</div>
+  <div class="chart-grid three">
+    <div class="chart-card tone-mint">
+      <h3>mint 卡片顶条</h3>
+      <div class="chart-body"><canvas id="tpl_b1"></canvas></div>
+      <div class="insight mint">渐变背景的 insight 条可与标题色系一致。</div>
+    </div>
+    <div class="chart-card tone-amber">
+      <h3>amber 卡片</h3>
+      <div class="chart-body"><canvas id="tpl_b2"></canvas></div>
+      <div class="insight amber">amber 系列与右侧 slate 形成冷暖对比。</div>
+    </div>
+    <div class="chart-card tone-slate">
+      <h3>slate 卡片</h3>
+      <div class="chart-body"><canvas id="tpl_b3"></canvas></div>
+      <div class="insight slate">更多标题类：<code>.section-title.coral .slate .indigo .crimson</code> 等见 CSS。</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const labels = ['M1','M2','M3','M4','M5','M6'];
+  const randSeries = () => labels.map(() => Math.round(20 + Math.random() * 80));
+
+  function mkLine(label, data, color, dash) {
+    return {
+      type: 'line',
+      label, data,
+      borderColor: color,
+      backgroundColor: color + '22',
+      pointBackgroundColor: color,
+      pointRadius: 4,
+      borderWidth: 2.2,
+      borderDash: dash || [],
+      tension: 0.35,
+      fill: false,
+      spanGaps: true,
+    };
+  }
+  function mkBar(label, data, color) {
+    return { type: 'bar', label, data, backgroundColor: color + 'bb', borderRadius: 6 };
+  }
+  const baseOpts = (yLabel) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      x: { grid: { color: 'rgba(15,23,42,0.06)' } },
+      y: {
+        beginAtZero: true,
+        grace: '8%',
+        title: yLabel ? { display: true, text: yLabel } : undefined,
+        grid: { color: 'rgba(15,23,42,0.06)' },
+      },
+    },
+  });
+  const dualOpts = (L, R) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      x: { grid: { color: 'rgba(15,23,42,0.06)' } },
+      y: { position: 'left', beginAtZero: true, grace: '8%', title: { display: true, text: L }, grid: { color: 'rgba(15,23,42,0.06)' } },
+      y1: { position: 'right', beginAtZero: true, grace: '8%', title: { display: true, text: R }, grid: { drawOnChartArea: false } },
+    },
+  });
+
+  const c1 = '#118ab2', c2 = '#6366f1', c3 = '#e85d75', c4 = '#059669', c5 = '#d97706', c6 = '#475569';
+
+  new Chart(document.getElementById('tpl_a1'), { type: 'line', data: { labels, datasets: [mkLine('序列 A', randSeries(), c1)] }, options: baseOpts('值') });
+  new Chart(document.getElementById('tpl_a2'), { type: 'line', data: { labels, datasets: [mkLine('序列 B', randSeries(), c2)] }, options: baseOpts('值') });
+  new Chart(document.getElementById('tpl_a3'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        mkBar('柱', randSeries(), c3),
+        { ...mkLine('线', randSeries(), '#2dd4bf', [6, 3]), yAxisID: 'y1' },
+      ],
+    },
+    options: dualOpts('左轴', '右轴'),
+  });
+  new Chart(document.getElementById('tpl_b1'), { type: 'line', data: { labels, datasets: [mkLine('mint', randSeries(), c4)] }, options: baseOpts('') });
+  new Chart(document.getElementById('tpl_b2'), { type: 'line', data: { labels, datasets: [mkLine('amber', randSeries(), c5)] }, options: baseOpts('') });
+  new Chart(document.getElementById('tpl_b3'), { type: 'line', data: { labels, datasets: [mkLine('slate', randSeries(), c6)] }, options: baseOpts('') });
+})();
+</script>
+</body>
+</html>

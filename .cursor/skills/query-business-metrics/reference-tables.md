@@ -3,7 +3,7 @@
 > 新确认的表结构或指标口径：在 `SKILL.md` 工作流末尾要求追加一行到本节对应表。  
 > **性能**：新建/改写 SQL 须遵守 `SKILL.md`「查询性能与语句选择」——优先最快且口径正确的写法。
 
-**仓库目录**：**`查询指标/`** 存每次指标查询产出；**须有 `.md`**（口径 + 结果），**可选 `.json`** 等与指标同名的配套文件。财年类拉数脚本在 **`query-business-metrics/scripts/`**（与 `weekly-core-metrics/scripts` 并列，产出仍写入仓库根 `查询指标/`）。
+**仓库目录**：**`查询指标/`** 存每次指标查询产出；**每次只新增一个 `.md`**（口径说明 + SQL + 结果表/要点），**不**为单次查数再配合同名 `.json`。图表用结构化 JSON（如 `FY2025_chart_data.json`）由业务侧按需单独维护，不属于「单次指标查询」的必交付物。
 
 ## Archery 接口与鉴权
 
@@ -90,22 +90,108 @@
 
 ---
 
-## 历史短窗（脚本与旧产物仍引用，待与新财年口径对齐）
+## 历史短窗（旧产物对齐用）
 
-下列 **非** 公司财年整段，仅为历史脚本/旧「FYI」产物中的 **短窗口**；**新分析默认用上一节**；改脚本时建议改为上一节「财年（周）」或「财年（月）」的 `BETWEEN`。
+下列 **非** 公司财年整段，仅为历史产物中曾出现的 **短窗口**；**新分析默认用上一节「公司财年」**。需要复现旧数时，将日期代入下方 **SQL 模板** 与 `run_archery_query.py`（或 Archery）即可。
 
-| 名称 | 曾用「25 窗」 | 曾用「24 窗」 | 主要使用者 |
-|------|---------------|---------------|------------|
-| **A. 原 FYI 短窗** | `2026-03-30` ~ `2026-04-05` | `2025-03-31` ~ `2025-04-06` | `query_fy25_filter_info_defaults.py`（`FY25_START`/`FY25_END`） |
-| **B. 原代表周** | `2026-03-23` ~ `2026-03-29` | `2025-03-24` ~ `2025-03-30` | `query_fy24_fy25_metrics.py` 内 `WINDOWS`；`查询指标/FY24_FY25_指标.*`（与现行 **财年（周）** 起止一致，仅命名历史遗留） |
+| 名称 | 曾用「25 窗」 | 曾用「24 窗」 | 说明 |
+|------|---------------|---------------|------|
+| **A. 原 FYI 短窗** | `2026-03-30` ~ `2026-04-05` | `2025-03-31` ~ `2025-04-06` | 曾用于筛选默认值「窗内有更新」类指标 |
+| **B. 原代表周（财年周）** | `2026-03-23` ~ `2026-03-29` | `2025-03-24` ~ `2025-03-30` | 与现行 **财年（周）** 一致；`查询指标/FY24_FY25_指标.*` 等历史文件名沿用 |
 
-改脚本常量后：**同步更新本表与本节**，避免文档与代码不一致。
+## 代表周类指标 · SQL 模板（原财年批跑脚本已下线）
 
-## 已有脚本（优先复用）
+以下 **`{ws}` / `{we}`** 替换为「历史短窗」**B** 行对应起止日，或替换为任意业务窗。执行：**单实例**用 `run_archery_query.py` 传 `--instance` + `--table`；**ADB** 返回 `org_id` 列表时用 `--adb-merge`（或各实例导出后在库外并集）。
 
-| 脚本 | 作用 |
+### TV（≥2 个自然日有 `tv-device-info`）
+
+```sql
+SELECT COUNT(*) AS c FROM (
+  SELECT orgId
+  FROM trace_log_dp
+  WHERE dat BETWEEN DATE '{ws}' AND DATE '{we}'
+    AND event = 'tv-device-info'
+  GROUP BY orgId
+  HAVING COUNT(DISTINCT dat) >= 2
+) x;
+```
+
+- **实例**：`小工单_阿里云_prod_starrocks`，`tb_name`：`trace_log_dp`。
+
+### 自定义报表 / 智能看板（PageView，周内 ≥2 天）
+
+自定义 URL：`%/customDashboard/detail%`；智能 URL：`%/intelligentDashboard/detail/%`。
+
+```sql
+SELECT COUNT(*) AS c FROM (
+  SELECT orgId
+  FROM trace_log_dp
+  WHERE dat BETWEEN DATE '{ws}' AND DATE '{we}'
+    AND event = 'PageView'
+    AND get_json_string(eventValues, '$.url') LIKE '%/customDashboard/detail%'
+  GROUP BY orgId
+  HAVING COUNT(DISTINCT dat) >= 2
+) x;
+```
+
+### 协同（窗内创建任务天数 ≥2）
+
+```sql
+SELECT org_id FROM (
+  SELECT org_id, COUNT(DISTINCT DATE(created_at)) AS d
+  FROM dt_collaborative_task
+  WHERE DATE(created_at) BETWEEN DATE '{ws}' AND DATE '{we}'
+  GROUP BY org_id
+) t WHERE d >= 2;
+```
+
+- **表**：`dt_collaborative_task`；**ADB 三实例** `org_id` 并集计数。
+
+### 委外（窗内有过「收货」过账的工厂）
+
+```sql
+SELECT DISTINCT org_id
+FROM dt_outsource_post
+WHERE post_type_name = '收货'
+  AND DATE(created_at) BETWEEN DATE '{ws}' AND DATE '{we}'
+  AND COALESCE(deleted_at, 0) = 0;
+```
+
+- **表**：`dt_outsource_post`；**ADB 三实例**并集去重。
+
+### 筛选默认值（`dt_custom_filter_info` · `defaultValueInfo`）
+
+**全量 · 自定义报表（`dashboard_type = 1`）**（单实例示例；工厂数需 01/02/03 合并）：
+
+```sql
+SELECT DISTINCT f.org_id
+FROM dt_custom_filter_info f
+INNER JOIN dt_custom_dashboard d
+  ON d.id = f.dashboard_id AND d.org_id = f.org_id
+WHERE COALESCE(f.deleted_at, 0) = 0
+  AND COALESCE(d.deleted_at, 0) = 0
+  AND d.dashboard_type = 1
+  AND jsonb_path_exists(
+    f.filter_condition::jsonb,
+    '$[*] ? (@.defaultValueInfo != null)'
+  );
+```
+
+智能看板改 `dashboard_type = 3`。若仅统计 **A 类短窗**内新建或更新，增加：
+
+```sql
+  AND (
+    DATE(f.updated_at) BETWEEN DATE '{ws}' AND DATE '{we}'
+    OR DATE(f.created_at) BETWEEN DATE '{ws}' AND DATE '{we}'
+  );
+```
+
+## 通用查数入口
+
+| 路径 | 作用 |
 |------|------|
-| `query-business-metrics/scripts/query_fy24_fy25_metrics.py` | FY 窗口：TV/报表/智能/协同/委外等指标；结果写入 `查询指标/` |
-| `query-business-metrics/scripts/query_fy25_filter_info_defaults.py` | 筛选 `defaultValueInfo` 工厂数；结果写入 `查询指标/` |
-| `.cursor/skills/trend-chart/scripts/generate_fy25_usage_report.py` | FY2025（2025-04-01～2026-03-31）五模块**月度**使用趋势 HTML；产出在 `图表/`，缓存与样式见同 skill |
-| `.cursor/skills/weekly-core-metrics/scripts/generate_weekly_report.py` | 周报委外 + 协同 |
+| **`query-business-metrics/scripts/run_archery_query.py`** | **唯一推荐**：Archery 单实例查询或 `--adb-merge` 合并 `org_id`；SQL + `--var` 模板变量 |
+| `business-charts/scripts/render_dashboard_html.py` | 第 2 段：读已有 JSON + manifest → `图表/*.html` |
+| `weekly-core-metrics/scripts/generate_weekly_report.py` | 周报：委外 + 协同（独立场景） |
+
+**FY2025 月度看板 JSON**（`FY2025_chart_data.json`）：原专用导出脚本已移除；更新数据需按 `查询指标/FY2025_功能使用年度总结_口径.md` 各模块口径自行查数（`run_archery_query.py` / Archery），再维护 JSON 或使用 md 表格承载结论。

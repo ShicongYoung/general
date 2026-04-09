@@ -2,12 +2,13 @@
 """
 通用业务图表生成器（配置驱动）。
 
-目标：
-- 用同一套 HTML 样式（参考「周报/趋势图表-3月.html」）渲染任意业务指标图表
+技能说明见：.cursor/skills/business-charts/SKILL.md（取数口径优先对齐 query-business-metrics）。
+
+- HTML 样式由 templates/chart-report-light.css 等模板提供
 - 数据源通过 Archery：StarRocks（trace_log_dp）与 ADB 分片（01/02/03）
 - 输出到「图表/」，可选写入「查询指标/」一份 md 索引
 
-配置示例见同目录：chart-config.fy25-usage.example.json
+配置示例：chart-config.example.json
 """
 
 from __future__ import annotations
@@ -25,7 +26,6 @@ from typing import Any, Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 DEFAULT_CONFIG_PATH = ".cursor/skills/weekly-core-metrics/scripts/config.json"
-SKILL_ROOT = Path(__file__).resolve().parent.parent
 
 
 def repo_root() -> Path:
@@ -37,24 +37,38 @@ def repo_root() -> Path:
 
 
 ROOT = repo_root()
+CHART_REPORT_CSS = ROOT / ".cursor/skills/business-charts/templates/chart-report-light.css"
 
+# 与 templates/chart-report-light.css 中 section-title / insight / chart-card.tone-* 一致
+THEME_SECTION_CLASS: Dict[str, str] = {
+    "blue": "",
+    "green": "green",
+    "purple": "purple",
+    "orange": "orange",
+    "teal": "teal",
+    "coral": "coral",
+    "rose": "rose",
+    "slate": "slate",
+    "indigo": "indigo",
+    "amber": "amber",
+    "mint": "mint",
+    "crimson": "crimson",
+}
 
-def skill_asset_text(*parts: str) -> str:
-    p = SKILL_ROOT.joinpath(*parts)
-    if not p.is_file():
-        raise FileNotFoundError(f"缺少 skill 资源：{p}")
-    return p.read_text(encoding="utf-8")
-
-
-def resolve_cache_path(conf: dict, out_dir: Path, root: Path) -> Path:
-    raw = conf.get("cache_file") or "_chart_cache.json"
-    p = Path(raw)
-    if p.is_absolute():
-        return p
-    s = str(raw).replace("\\", "/")
-    if s.startswith(".cursor/") or "/.cursor/" in s:
-        return root / raw
-    return out_dir / raw
+THEME_PALETTE: Dict[str, Tuple[str, str, str]] = {
+    "blue": ("#4361ee", "#7b8cde", "#f77f00"),
+    "green": ("#2d9d78", "#5dc8a0", "#f59e0b"),
+    "purple": ("#6f58ff", "#a08cff", "#14b8a6"),
+    "orange": ("#ea580c", "#fbbf24", "#6366f1"),
+    "teal": ("#0e7490", "#2dd4bf", "#e11d48"),
+    "coral": ("#e85d75", "#f4a261", "#0891b2"),
+    "rose": ("#be185d", "#f472b6", "#4f46e5"),
+    "slate": ("#334155", "#94a3b8", "#d97706"),
+    "indigo": ("#4338ca", "#818cf8", "#db2777"),
+    "amber": ("#b45309", "#fbbf24", "#059669"),
+    "mint": ("#047857", "#34d399", "#7c3aed"),
+    "crimson": ("#9f1239", "#fb7185", "#2563eb"),
+}
 
 
 def load_json(path: Path) -> dict:
@@ -244,21 +258,17 @@ def build_html(report: dict, periods: Sequence[Period], computed: dict) -> str:
       - chartId -> { labels, datasets, insightHtml }
     """
     labels = json.dumps([p.label for p in periods], ensure_ascii=False)
-
-    # 样式：复用 3 月趋势图表风格
-    def section_title_class(theme: str) -> str:
-        return {
-            "blue": "",
-            "green": "green",
-            "purple": "purple",
-            "orange": "orange",
-            "teal": "teal",
-        }.get(theme, "")
+    css_text = (
+        CHART_REPORT_CSS.read_text(encoding="utf-8")
+        if CHART_REPORT_CSS.is_file()
+        else "/* missing .cursor/skills/business-charts/templates/chart-report-light.css */"
+    )
 
     sections_html = ""
     for sec in report["sections"]:
         theme = sec.get("theme", "blue")
-        cls = section_title_class(theme)
+        cls = THEME_SECTION_CLASS.get(theme, "")
+        tone_theme = theme if theme in THEME_PALETTE else "blue"
         grid = sec.get("grid", "three")
         sections_html += f"""
 <div class="section">
@@ -267,9 +277,9 @@ def build_html(report: dict, periods: Sequence[Period], computed: dict) -> str:
 """
         for ch in sec["charts"]:
             cid = ch["id"]
-            ins_cls = {"blue": "", "green": "green", "purple": "purple", "orange": "orange", "teal": "teal"}.get(theme, "")
+            ins_cls = THEME_SECTION_CLASS.get(theme, "")
             sections_html += f"""
-    <div class="chart-card">
+    <div class="chart-card tone-{tone_theme}">
       <h3>{ch['title']}</h3>
       <div class="chart-body">
         <canvas id="{cid}"></canvas>
@@ -282,40 +292,28 @@ def build_html(report: dict, periods: Sequence[Period], computed: dict) -> str:
 </div>
 """
 
-    # JS：统一生成
     charts_js = ""
     for sec in report["sections"]:
         theme = sec.get("theme", "blue")
-        palette = {
-            "blue": ("#4361ee", "#7b8cde", "#f77f00"),
-            "green": ("#2d9d78", "#5dc8a0", "#f77f00"),
-            "purple": ("#6f58ff", "#a08cff", "#f77f00"),
-            "orange": ("#f77f00", "#fcbf49", "#4361ee"),
-            "teal": ("#118ab2", "#5dc8a0", "#4361ee"),
-        }.get(theme, ("#4361ee", "#7b8cde", "#f77f00"))
+        palette = THEME_PALETTE.get(theme, THEME_PALETTE["blue"])
         for ch in sec["charts"]:
             cfg = computed[ch["id"]]
             charts_js += cfg["chartJs"].replace("{{C1}}", palette[0]).replace("{{C2}}", palette[1]).replace("{{C3}}", palette[2])
 
-    report_css = skill_asset_text("templates", "chart-report-light.css")
-    chart_umd = skill_asset_text("vendor", "chart.umd.min.js")
     return f"""<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{report['title']}</title>
-<!-- Chart.js：内联自 skill/vendor，避免 file:// 或未携带 vendor 时空白 -->
-<script>{chart_umd}</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-{report_css}
+{css_text}
 </style>
 </head>
 <body>
-<!-- 页面标题区 -->
 <h1>{report['title']}</h1>
 <p class="subtitle">{report.get('subtitle','')}</p>
-<!-- 图表分区（由配置 report.sections 生成） -->
 {sections_html}
 <script>
 const labels = {labels};
@@ -341,11 +339,11 @@ const baseOpts = (yLabel) => ({{
     tooltip: {{ padding:10, cornerRadius:8 }},
   }},
   scales: {{
-    x: {{ grid:{{color:'#f2f2f2'}}, ticks:{{font:{{size:12}}}} }},
+    x: {{ grid:{{ color:'rgba(15,23,42,0.06)' }}, ticks:{{font:{{size:12}}}} }},
     y: {{
-      grid:{{color:'#f2f2f2'}},
+      grid:{{ color:'rgba(15,23,42,0.06)' }},
       ticks:{{ font:{{size:12}}, padding: 6 }},
-      title:{{display:!!yLabel,text:yLabel}},
+      title:{{ display:!!yLabel, text:yLabel }},
       beginAtZero:true,
       grace: '8%',
     }},
@@ -368,10 +366,10 @@ const dualOpts = (yLeft, yRight) => ({{
     tooltip: {{ padding:10, cornerRadius:8 }},
   }},
   scales: {{
-    x: {{ grid:{{color:'#f2f2f2'}}, ticks:{{font:{{size:12}}}} }},
+    x: {{ grid:{{ color:'rgba(15,23,42,0.06)' }}, ticks:{{font:{{size:12}}}} }},
     y: {{
       position:'left', beginAtZero:true, grace:'8%',
-      title:{{display:true,text:yLeft}}, grid:{{color:'#f2f2f2'}},
+      title:{{display:true,text:yLeft}}, grid:{{color:'rgba(15,23,42,0.06)'}},
       ticks:{{ font:{{size:12}}, padding: 6 }},
     }},
     y1: {{
@@ -398,59 +396,39 @@ def compile_chart(chart: dict, periods: Sequence[Period], series_data: Dict[str,
     """
     kind = chart["kind"]
     ds_defs = chart["datasets"]
-    datasets_js: List[str] = []
+    datasets_js = []
+    for i, ds in enumerate(ds_defs):
+        sname = ds["series"]
+        vals = series_data[sname]
+        color = "{{C1}}" if i == 0 else ("{{C2}}" if i == 1 else "{{C3}}")
+        if kind == "dual_bar_line" and i == 0:
+            datasets_js.append(f"mkBar('{ds['label']}', {js_arr(vals, ds.get('value_kind','int'))}, '{color}')")
+        elif kind in ("bar",):
+            datasets_js.append(f"mkBar('{ds['label']}', {js_arr(vals, ds.get('value_kind','int'))}, '{color}')")
+        else:
+            dash = "[6,3]" if i == 1 else "[]"
+            axis = ds.get("axis", "y")
+            datasets_js.append(f"{{...mkLine('{ds['label']}', {js_arr(vals, ds.get('value_kind','int'))}, '{color}', {dash}), yAxisID:'{axis}'}}")
 
     if kind == "dual_bar_line":
-        for i, ds in enumerate(ds_defs):
-            sname = ds["series"]
-            vals = series_data[sname]
-            color = "{{C1}}" if i == 0 else ("{{C2}}" if i == 1 else "{{C3}}")
-            axis = ds.get("axis", "y")
-            if i == 0:
-                datasets_js.append(f"mkBar('{ds['label']}', {js_arr(vals, ds.get('value_kind','int'))}, '{color}')")
-            else:
-                datasets_js.append(
-                    f"{{...mkLine('{ds['label']}', {js_arr(vals, ds.get('value_kind','int'))}, '{color}', [6,3]), yAxisID:'{axis}'}}"
-                )
+        opt = "dualOpts('左轴','右轴')"
         chart_js = f"""
 new Chart(document.getElementById('{chart['id']}'), {{
   type: 'bar',
   data: {{ labels, datasets:[{", ".join(datasets_js)}] }},
-  options: dualOpts('左轴','右轴')
+  options: {opt}
 }});
 """.strip()
-    else:
-        for i, ds in enumerate(ds_defs):
-            sname = ds["series"]
-            vals = series_data[sname]
-            color = "{{C1}}" if i == 0 else ("{{C2}}" if i == 1 else "{{C3}}")
-            if kind in ("bar",):
-                datasets_js.append(f"mkBar('{ds['label']}', {js_arr(vals, ds.get('value_kind','int'))}, '{color}')")
-            else:
-                dash = "[6,3]" if i == 1 else "[]"
-                axis = ds.get("axis", "y")
-                datasets_js.append(
-                    f"{{...mkLine('{ds['label']}', {js_arr(vals, ds.get('value_kind','int'))}, '{color}', {dash}), yAxisID:'{axis}'}}"
-                )
-
-        if kind == "pct_line":
-            chart_js = f"""
+    elif kind == "pct_line":
+        chart_js = f"""
 new Chart(document.getElementById('{chart['id']}'), {{
   type:'line',
   data: {{ labels, datasets:[{", ".join(datasets_js)}] }},
   options: pctOpts('%')
 }});
 """.strip()
-        elif kind == "bar":
-            chart_js = f"""
-new Chart(document.getElementById('{chart['id']}'), {{
-  type:'bar',
-  data: {{ labels, datasets:[{", ".join(datasets_js)}] }},
-  options: baseOpts('{chart.get('y_label','')}')
-}});
-""".strip()
-        else:
-            chart_js = f"""
+    else:
+        chart_js = f"""
 new Chart(document.getElementById('{chart['id']}'), {{
   type:'line',
   data: {{ labels, datasets:[{", ".join(datasets_js)}] }},
@@ -487,8 +465,14 @@ def main() -> None:
     p_start, p_end = conf["periods"]["start"], conf["periods"]["end"]
     periods = build_month_periods(p_start, p_end) if gran == "month" else build_week_periods(p_start, p_end, conf["periods"].get("week_start", 0))
 
-    cache_file = resolve_cache_path(conf, out_dir, ROOT)
-    cache_file.parent.mkdir(parents=True, exist_ok=True)
+    raw_cache = conf.get("cache_file") or "_chart_cache.json"
+    cr_path = Path(raw_cache)
+    if cr_path.is_absolute():
+        cache_file = cr_path
+    elif cr_path.parts and cr_path.parts[0] == ".cursor":
+        cache_file = ROOT.joinpath(*cr_path.parts)
+    else:
+        cache_file = out_dir / cr_path
 
     if args.offline:
         payload = load_json(cache_file)

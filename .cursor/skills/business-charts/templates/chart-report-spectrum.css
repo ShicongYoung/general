@@ -1,0 +1,350 @@
+/* chart-report-spectrum.css — 略强渐变与卡片层次，适合对内对外演示 */
+
+:root {
+  --page-bg: linear-gradient(145deg, #e0e7ff 0%, #f8fafc 35%, #fff7ed 100%);
+  --page-fg: #1e293b;
+  --card-shadow: 0 6px 20px rgba(79, 70, 229, 0.08);
+  --card-shadow-hover: 0 12px 28px rgba(79, 70, 229, 0.12);
+  --chart-grid-line: rgba(15, 23, 42, 0.06);
+  --accent-border-w: 4px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--page-bg);
+  color: var(--page-fg);
+  padding: 28px 32px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #888;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+/* KPI 摘要行（多模块年度总结等页面使用） */
+.summary-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.kpi {
+  background: #fff;
+  border-radius: 10px;
+  padding: 14px 18px;
+  flex: 1;
+  min-width: 160px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+}
+
+.kpi.accent-blue {
+  border-top: var(--accent-border-w) solid #4361ee;
+}
+
+.kpi.accent-teal {
+  border-top: var(--accent-border-w) solid #118ab2;
+}
+
+.kpi.accent-coral {
+  border-top: var(--accent-border-w) solid #e85d75;
+}
+
+.kpi.accent-amber {
+  border-top: var(--accent-border-w) solid #f4a261;
+}
+
+.kpi .title {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 4px;
+}
+
+.kpi .val {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.kpi .sub {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+/* 默认徽章（非 KPI 区如需复用可另行 class） */
+.badge.up {
+  background: #e6f9f0;
+  color: #10a060;
+}
+
+.badge.down {
+  background: #fff0f0;
+  color: #e04040;
+}
+
+/* 顶部 KPI 卡：上升红色、下降绿色（A 股习惯） */
+.summary-row .badge.up {
+  background: #ffe4e6;
+  color: #e11d48;
+}
+
+.summary-row .badge.down {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.section {
+  margin-bottom: 34px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(90deg, #4361ee, #7b8cde);
+  padding: 10px 20px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.section-title.green {
+  background: linear-gradient(90deg, #2d9d78, #5dc8a0);
+}
+
+.section-title.purple {
+  background: linear-gradient(90deg, #6f58ff, #a08cff);
+}
+
+.section-title.orange {
+  background: linear-gradient(90deg, #f77f00, #fcbf49);
+}
+
+.section-title.teal {
+  background: linear-gradient(90deg, #118ab2, #5dc8a0);
+}
+
+.section-title.coral {
+  background: linear-gradient(120deg, #e85d75, #f4a261);
+}
+
+.section-title.rose {
+  background: linear-gradient(90deg, #be185d, #ec4899);
+}
+
+.section-title.slate {
+  background: linear-gradient(90deg, #334155, #64748b);
+}
+
+.section-title.indigo {
+  background: linear-gradient(90deg, #3730a3, #6366f1);
+}
+
+.section-title.amber {
+  background: linear-gradient(90deg, #d97706, #fbbf24);
+}
+
+.section-title.mint {
+  background: linear-gradient(90deg, #047857, #34d399);
+}
+
+.section-title.crimson {
+  background: linear-gradient(95deg, #9f1239, #fb7185);
+}
+
+.chart-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.chart-grid.three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.chart-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 18px 14px;
+  box-shadow: var(--card-shadow);
+  min-height: 0;
+  border: 1px solid rgba(15, 23, 42, 0.05);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.chart-card:hover {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* 与 section 主题呼应的卡片顶条（可选类名） */
+.chart-card.tone-blue {
+  border-top: var(--accent-border-w) solid #4361ee;
+}
+
+.chart-card.tone-green {
+  border-top: var(--accent-border-w) solid #2d9d78;
+}
+
+.chart-card.tone-purple {
+  border-top: var(--accent-border-w) solid #6f58ff;
+}
+
+.chart-card.tone-orange {
+  border-top: var(--accent-border-w) solid #f77f00;
+}
+
+.chart-card.tone-teal {
+  border-top: var(--accent-border-w) solid #118ab2;
+}
+
+.chart-card.tone-coral {
+  border-top: var(--accent-border-w) solid #e85d75;
+}
+
+.chart-card.tone-rose {
+  border-top: var(--accent-border-w) solid #be185d;
+}
+
+.chart-card.tone-slate {
+  border-top: var(--accent-border-w) solid #475569;
+}
+
+.chart-card.tone-indigo {
+  border-top: var(--accent-border-w) solid #4f46e5;
+}
+
+.chart-card.tone-amber {
+  border-top: var(--accent-border-w) solid #d97706;
+}
+
+.chart-card.tone-mint {
+  border-top: var(--accent-border-w) solid #059669;
+}
+
+.chart-card h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+/*
+ * 绘图区：固定高度 + Chart.js options.maintainAspectRatio = false，避免画布被压扁、y 轴可读性差。
+ * 生成 HTML 时请将 <canvas> 包在本容器内。
+ */
+.chart-body {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  min-height: 260px;
+}
+
+.chart-body.tall {
+  height: 340px;
+  min-height: 300px;
+}
+
+.chart-body canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+}
+
+.insight {
+  margin-top: 10px;
+  font-size: 12.5px;
+  color: #555;
+  line-height: 1.6;
+  background: #f8f9fd;
+  border-left: 3px solid #4361ee;
+  padding: 8px 12px;
+  border-radius: 0 6px 6px 0;
+}
+
+.insight.green {
+  border-left-color: #2d9d78;
+}
+
+.insight.purple {
+  border-left-color: #6f58ff;
+}
+
+.insight.orange {
+  border-left-color: #f77f00;
+}
+
+.insight.teal {
+  border-left-color: #118ab2;
+}
+
+.insight.coral {
+  border-left-color: #e85d75;
+  background: linear-gradient(90deg, #fff5f7 0%, #f8f9fd 100%);
+}
+
+.insight.rose {
+  border-left-color: #be185d;
+  background: linear-gradient(90deg, #fdf2f8 0%, #f8fafc 100%);
+}
+
+.insight.slate {
+  border-left-color: #475569;
+  background: #f8fafc;
+}
+
+.insight.indigo {
+  border-left-color: #4f46e5;
+  background: linear-gradient(90deg, #eef2ff 0%, #f8f9fd 100%);
+}
+
+.insight.amber {
+  border-left-color: #d97706;
+  background: linear-gradient(90deg, #fffbeb 0%, #f8f9fd 100%);
+}
+
+.insight.mint {
+  border-left-color: #059669;
+  background: linear-gradient(90deg, #ecfdf5 0%, #f8f9fd 100%);
+}
+
+.insight.crimson {
+  border-left-color: #9f1239;
+  background: linear-gradient(90deg, #fff1f2 0%, #f8fafc 100%);
+}
+
+@media (max-width: 900px) {
+  .chart-grid,
+  .chart-grid.three {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-row {
+    flex-direction: column;
+  }
+}

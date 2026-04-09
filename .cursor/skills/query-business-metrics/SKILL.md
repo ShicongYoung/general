@@ -1,23 +1,28 @@
 ---
 name: query-business-metrics
 description: >-
-  通过 Archery 查询小工单/黑湖业务指标：优先复用仓库内现成 Python 脚本；陌生指标则先拉表结构、再推断口径并生成 SQL（StarRocks 或 ADB 多分片合并）。查询语句须优先采用高性能写法（分区与选择性条件前置、库内聚合、避免无谓全表扫描）。
+  通过 Archery 查询小工单/黑湖业务指标：用通用脚本 run_archery_query.py 换参查数；陌生指标则先拉表结构、再推断口径并生成 SQL（StarRocks 或 ADB 多分片合并）。查询语句须优先采用高性能写法（分区与选择性条件前置、库内聚合、避免无谓全表扫描）。
   Use when the user asks for 业务指标, 工厂数, 活跃, 埋点, Archery, SQL 查数, 查询指标, FY24, FY25, 委外, 协同, 自定义报表, 智能看板, TV 看板, trace_log_dp, 或「怎么统计某指标」。
 ---
 
 # 业务指标查询（Archery）
 
-## 第一步：有无现成脚本
+## 第一步：通用查数脚本
 
-在本仓库 **优先执行**（**公司财年、财年（周）、财年（月）**见 [reference-tables.md](reference-tables.md)「公司财年」；历史脚本短窗见同文件「历史短窗」；改常量后同步该表）：
+**优先使用** **`scripts/run_archery_query.py`**：传入 `--instance`、`--table`、`--sql` 或 `--sql-file`、以及重复的 **`--var KEY=VALUE`** 做 SQL 模板替换（`str.format`）。ADB 需三实例合并 `org_id` 时用 **`--adb-merge`**。鉴权默认读 **`weekly-core-metrics/scripts/config.json`**。
 
-| 路径 | 用途 |
-|------|------|
-| `.cursor/skills/query-business-metrics/scripts/query_fy24_fy25_metrics.py` | 财年窗口内 TV / 自定义&智能 PageView / 协同 / 委外 等；产出在 `查询指标/` |
-| `.cursor/skills/query-business-metrics/scripts/query_fy25_filter_info_defaults.py` | `dt_custom_filter_info` 筛选默认值（`defaultValueInfo`）按工厂；产出在 `查询指标/` |
-| `.cursor/skills/weekly-core-metrics/scripts/generate_weekly_report.py` | 周报：委外 + 协同（读其目录下 `config.json` 的 auth） |
+```bash
+python3 .cursor/skills/query-business-metrics/scripts/run_archery_query.py \
+  --instance 小工单_阿里云_prod_starrocks \
+  --table trace_log_dp \
+  --sql "SELECT COUNT(DISTINCT orgId) AS c FROM trace_log_dp WHERE dat BETWEEN DATE '{a}' AND DATE '{b}' AND event = 'tv-device-info'" \
+  --var a=2026-03-01 --var b=2026-03-31 \
+  --stdout-format scalar
+```
 
-能覆盖用户问题时：**直接运行脚本**，把结果摘要回复用户；输出路径见各脚本末尾说明。
+**公司财年、财年（周）、财年（月）**及 **代表周 / FYI 短窗**、**常见模块 SQL 模板**见 [reference-tables.md](reference-tables.md)。
+
+**周报（委外 + 协同）**仍可用 **`.cursor/skills/weekly-core-metrics/scripts/generate_weekly_report.py`**（读其 `config.json`）。
 
 ## 第二步：陌生指标 — 缺少表名
 
@@ -46,18 +51,18 @@ description: >-
 2. **库内聚合**：统计类查询用 **`GROUP BY` / `COUNT` / `COUNT(DISTINCT)`** 在 StarRocks/ADB 完成；**禁止** `SELECT` 大批量明细再在本地脚本去重计数（除非诊断性抽样）。
 3. **投影最小化**：只选 **`SELECT` 需要的列**；计数用 **`COUNT(1)`**；避免无必要的 `SELECT *` 跑大表。
 4. **与引擎/网关对齐**：本环境 Archery 对 **部分 CTE**、**`COUNT(*)`** 等可能受限或变慢，已确认可行时优先 **单层嵌套子查询** 或 **分步查询**；不要把明显会炸的 SQL 一次扔上去。
-5. **ADB 多分片**：继续 **按实例拆分**；单分片内避免 **巨型 `IN`**（必要时改 **存在性子查询** 或分段）。
+5. **ADB 多分片**：继续 **按实例拆分**；单分片内避免 **巨型 `IN`**（必要时改 **存在性子查询** 或分段）；合并工厂时优先 **`run_archery_query.py --adb-merge`**。
 6. **脚本批跑**：周期循环查数时，复用 **已验证的快 SQL**，不要为省事复制低效模板。
 
 ## 第四步：推断口径并写 SQL
 
 1. **工厂维度**：ADB 一般用 **`org_id`**；埋点 **`orgId`**。
-2. **多分片（ADB 01/02/03）**：每个实例跑同一 SQL，对 **`org_id` 列表做并集** 再计数；或 SQL 只返回 `org_id` 由脚本合并（与 `weekly-core-metrics/scripts` / `query-business-metrics/scripts` 同思路）。
+2. **多分片（ADB 01/02/03）**：每个实例跑同一 SQL，对 **`org_id` 列表做并集** 再计数；或 **`run_archery_query.py --adb-merge`**。
 3. **StarRocks**：`trace_log_dp` 中保留字列名如 `` `function` `` 需反引号；JSON 常用 `get_json_string(eventValues, '$.url')`。
 4. **软删**：有 `deleted_at` 时通常 `COALESCE(deleted_at, 0) = 0`。
 5. **时间窗（默认规则，须遵守）**：
    - **用户未提及「财年」「FY24」「FY25」等时间范围**：视为 **全量可查数据**——**不要**自动套用 [reference-tables.md](reference-tables.md) 中的财年窗 `dat BETWEEN`。埋点表通常 **不加** 自然日/财年过滤（仅保留业务必要的条件，如 `event = ...`）；**ADB** 按指标常规口径（如未删除行），**不因财年额外截断** `created_at`/`updated_at`，除非用户要求按某段时间统计。
-   - **用户明确财年或给出起止日期**：以 **[reference-tables.md](reference-tables.md)** **「公司财年」**（整年 / 财年（月）/ 财年（周））或用户当次口述为准；若用户说 **财年** 但未区分周/月/整年，**先确认** 再写 SQL。**历史短窗 A/B** 仅在与旧脚本/旧产物对齐时使用。
+   - **用户明确财年或给出起止日期**：以 **[reference-tables.md](reference-tables.md)** **「公司财年」**（整年 / 财年（月）/ 财年（周））或用户当次口述为准；若用户说 **财年** 而未区分周/月/整年，**先确认** 再写 SQL。**历史短窗 A/B** 仅在与旧产物对齐时使用。
    - **说明义务**：若查的是埋点全量，回复中简述「全量、受 `trace_log_dp` 保留周期限制」；若用户后来补了时间窗，再按新口径重跑。
 
 生成 SQL 后：**在对话里说明口径假设**，再执行或交给用户确认。
@@ -70,15 +75,29 @@ description: >-
 
 ## 必读域知识摘要
 
-更全的映射、实例名、合并规则、已有脚本列表见 **[reference-tables.md](reference-tables.md)**。
+更全的映射、实例名、合并规则、SQL 模板见 **[reference-tables.md](reference-tables.md)**。
 
 核心约定：
 
 - **埋点** → `小工单_阿里云_prod_starrocks` + `trace_log_dp`
 - **业务表** → ADB **01、02、03** + `liteman` + 按业务选表；**按工厂统计必须合并三实例**
 
+## 与图表产出（两段式）
+
+| 段 | 技能 | 职责 |
+|----|------|------|
+| **第 1 段（本技能）** | query-business-metrics | 定口径、**`run_archery_query.py`** 或 Archery 查数；**指标结论落盘仅 `查询指标/*.md`**（口径 + SQL + 结果）。 |
+| **第 2 段** | **[business-charts](../business-charts/SKILL.md)** | 若需 HTML 看板：读业务侧维护的 **数据 JSON + manifest**，`render_dashboard_html.py` → **`图表/*.html`**。 |
+
+**FY2025 月度看板**：口径见 **`查询指标/FY2025_功能使用年度总结_口径.md`**；数据文件 **`FY2025_chart_data.json`** 由业务按需更新（专用导出脚本已移除）。
+
 ## 注意事项
 
-- Token 易失效：鉴权失败时让用户更新 **`weekly-core-metrics/scripts/config.json`**（及脚本内 `CONFIG['auth']` 若未改为读配置）中的 `csrftoken` / `sessionid`。
+- Token 易失效：鉴权失败时让用户更新 **`weekly-core-metrics/scripts/config.json`** 中的 `csrftoken` / `sessionid`。
 - `trace_log_dp` **保留周期有限**；历史财年可能没有埋点，需说明「不可得」或换业务表口径。
-- 产出若落盘：**指标类查询结果**写在仓库 **`查询指标/`**，且 **每次须保存 Markdown（`.md`）**（含口径说明 + 结果表/要点）；若同时有结构化产物可并存 **`.json`**。拉数脚本在 **`query-business-metrics/scripts/`**（除非另行说明）；**新脚本/改脚本**应在 `查询指标/` 写出与指标同名的 **`.md`**。
+- **单次指标查询交付**：**只写一个 `.md`** 到 **`查询指标/`**（含口径 + 结果）；`run_archery_query.py` 的 **`--output`** 仅作原始响应调试，不作为指标正式交付物。
+</think>
+
+
+<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
+StrReplace

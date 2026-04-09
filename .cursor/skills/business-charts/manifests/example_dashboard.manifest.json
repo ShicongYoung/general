@@ -1,0 +1,220 @@
+{
+  "version": 1,
+  "stylesheet": "chart-report-light.css",
+  "page": {
+    "title": "多模块业务指标看板（示例）",
+    "subtitle_lines": [
+      "时间粒度：<b>自然月</b>。本页展示 manifest + 数据 JSON 的「配置驱动」渲染流程示例。",
+      "下方板块与序列字段仅为演示数据结构（<code>custom / multi / tv / collab / outsource</code>）；实际业务请替换为你的数据与文案。"
+    ]
+  },
+  "kpi": [
+    { "title": "自定义报表 · 活跃工厂（末月）", "bind": "custom.act", "format": "int" },
+    { "title": "进销存报表 · 活跃工厂（末月）", "bind": "multi.act", "format": "int" },
+    { "title": "TV · 高频在线工厂（末月）", "bind": "tv.ge10", "format": "int" },
+    { "title": "协同 · 高活跃工厂（末月）", "bind": "collab.act", "format": "int" },
+    { "title": "委外 · 深度收货转化（末月）", "bind": "outsource.convert", "format": "pct" }
+  ],
+  "sections": [
+    {
+      "theme": "teal",
+      "heading": "📊 自定义报表",
+      "grid": "three",
+      "charts": [
+        {
+          "id": "c_custom_users",
+          "title": "自定义报表 · 高粘性工厂走势",
+          "root_type": "line",
+          "y_left": "工厂数",
+          "insight_lead": "高粘性工厂走势反映报表模块在客户侧是否形成稳定使用习惯。",
+          "datasets": [
+            { "bind": "custom.act", "label": "活跃工厂数", "shape": "line", "format": "int", "role": "primary" }
+          ]
+        },
+        {
+          "id": "c_custom_depth",
+          "title": "自定义报表 · 流量与户均强度",
+          "root_type": "bar",
+          "y_left": "PV（次）",
+          "y_right": "PV / 活跃厂",
+          "insight_lead": "总 PV 与户均 PV 结合看，可区分「开户增多」与「单机变深」。",
+          "datasets": [
+            { "bind": "custom.pv", "label": "页面浏览量", "shape": "bar", "format": "int", "role": "primary" },
+            { "bind": "custom.pv_per_act", "label": "户均 PV", "shape": "line", "y_axis": "y1", "format": "float2", "role": "contrast" }
+          ]
+        },
+        {
+          "id": "c_custom_ret",
+          "title": "自定义报表 · 活跃留存",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "占比",
+          "insight_lead": "留存体现上月活跃客户在本月的持续度。",
+          "datasets": [
+            { "bind": "custom.ret", "label": "月留存", "shape": "line", "format": "ratio", "role": "primary" }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "blue",
+      "heading": "📦 多维进销存报表",
+      "grid": "three",
+      "charts": [
+        {
+          "id": "c_multi_users",
+          "title": "进销存报表 · 活跃工厂趋势",
+          "root_type": "line",
+          "y_left": "工厂数",
+          "insight_lead": "进销存类报表往往与月结、补货周期同步波动。",
+          "datasets": [
+            { "bind": "multi.act", "label": "活跃工厂数", "shape": "line", "format": "int", "role": "primary" }
+          ]
+        },
+        {
+          "id": "c_multi_depth",
+          "title": "进销存报表 · 流量与户均强度",
+          "root_type": "bar",
+          "y_left": "PV（次）",
+          "y_right": "PV / 活跃厂",
+          "insight_lead": "对比总流量与户均，便于运营判断增长来源。",
+          "datasets": [
+            { "bind": "multi.pv", "label": "页面浏览量", "shape": "bar", "format": "int", "role": "primary" },
+            { "bind": "multi.pv_per_act", "label": "户均 PV", "shape": "line", "y_axis": "y1", "format": "float2", "role": "contrast" }
+          ]
+        },
+        {
+          "id": "c_multi_ret",
+          "title": "进销存报表 · 活跃留存",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "占比",
+          "insight_lead": "留存陡变时可对照版本发布或大客户迁移。",
+          "datasets": [
+            { "bind": "multi.ret", "label": "月留存", "shape": "line", "format": "ratio", "role": "primary" }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "orange",
+      "heading": "📺 TV 版",
+      "grid": "three",
+      "charts": [
+        {
+          "id": "c_tv_users",
+          "title": "TV 看板 · 高频在线工厂",
+          "root_type": "line",
+          "y_left": "工厂数",
+          "insight_lead": "高频在线工厂体现大屏端是否形成稳定使用场景。",
+          "datasets": [
+            { "bind": "tv.ge10", "label": "高频工厂（≥10 次/月）", "shape": "line", "format": "int", "role": "primary" }
+          ]
+        },
+        {
+          "id": "c_tv_days",
+          "title": "TV 看板 · 户均在线粘性",
+          "root_type": "line",
+          "y_left": "天",
+          "insight_lead": "户均活跃天更贴近「来了几天」的习惯。",
+          "datasets": [
+            { "bind": "tv.avg_days", "label": "户均活跃天数", "shape": "line", "format": "float2", "role": "primary" }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "green",
+      "heading": "🤝 协同任务",
+      "grid": "auto",
+      "charts": [
+        {
+          "id": "c_col_users",
+          "title": "协同任务 · 高活跃工厂趋势",
+          "root_type": "line",
+          "y_left": "工厂数",
+          "insight_lead": "协同活跃工厂与组织内跨部门渗透相关。",
+          "datasets": [
+            { "bind": "collab.act", "label": "活跃工厂数", "shape": "line", "format": "int", "role": "primary" }
+          ]
+        },
+        {
+          "id": "c_col_ret",
+          "title": "协同任务 · 活跃留存",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "占比",
+          "insight_lead": "结合任务条数看留存，避免阈值口径带来的误判。",
+          "datasets": [
+            { "bind": "collab.ret", "label": "月留存", "shape": "line", "format": "ratio", "role": "primary" }
+          ]
+        },
+        {
+          "id": "c_col_tasks",
+          "title": "协同任务 · 任务量与户均负荷",
+          "root_type": "bar",
+          "y_left": "任务（条）",
+          "y_right": "条 / 活跃厂",
+          "insight_lead": "总量与户均双轴便于发现堆积或头部集中。",
+          "datasets": [
+            { "bind": "collab.tasks", "label": "新建任务数", "shape": "bar", "format": "int", "role": "primary" },
+            { "bind": "_derived.collab_tasks_per_act", "label": "户均任务数", "shape": "line", "y_axis": "y1", "format": "float2", "role": "contrast" }
+          ]
+        },
+        {
+          "id": "c_col_assoc",
+          "title": "协同任务 · 关联工单占比",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "占比",
+          "insight_lead": "关联占比反映协同与主流程单据的衔接程度。",
+          "datasets": [
+            { "bind": "collab.assoc", "label": "关联任务占比", "shape": "line", "format": "ratio", "role": "primary" }
+          ]
+        }
+      ]
+    },
+    {
+      "theme": "purple",
+      "heading": "🧾 委外管理",
+      "grid": "three",
+      "charts": [
+        {
+          "id": "c_out_use",
+          "title": "委外管理 · 订单覆盖与深度收货",
+          "root_type": "bar",
+          "y_left": "工厂数",
+          "y_right": "转化率（%）",
+          "insight_lead": "覆盖与履约纵深一起看，可判断漏斗是否健康。",
+          "datasets": [
+            { "bind": "outsource.orders", "label": "有单工厂", "shape": "bar", "format": "int", "role": "primary" },
+            { "bind": "outsource.recv8", "label": "高频收货工厂", "shape": "bar", "format": "int", "role": "secondary" },
+            { "bind": "outsource.convert", "label": "转化率", "shape": "line", "y_axis": "y1", "format": "ratio_chart_pct", "role": "contrast" }
+          ]
+        },
+        {
+          "id": "c_out_ret",
+          "title": "委外管理 · 订单客户粘性",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "占比",
+          "insight_lead": "有单客户的跨月重合衡量持续使用程度。",
+          "datasets": [
+            { "bind": "outsource.ret", "label": "月留存", "shape": "line", "format": "ratio", "role": "primary" }
+          ]
+        },
+        {
+          "id": "c_out_avg_ord",
+          "title": "委外管理 · 户均下单强度",
+          "root_type": "line",
+          "y_left": "单 / 厂",
+          "insight_lead": "户均订单加深通常意味模块内业务做实。",
+          "datasets": [
+            { "bind": "outsource.avg_orders", "label": "户均订单数", "shape": "line", "format": "float2", "role": "primary" }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer_note": "数据：<code>.cursor/skills/business-charts/cache/example_dashboard_data.json</code>（schema v2 示例快照）。生成命令：<code>python3 .cursor/skills/business-charts/scripts/render_dashboard_html.py --data .cursor/skills/business-charts/cache/example_dashboard_data.json --manifest .cursor/skills/business-charts/manifests/example_dashboard.manifest.json --output 图表/业务图表_manifest示例.html</code>。"
+}

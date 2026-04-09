@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FY2025 功能使用年度总结</title>
+<title>FY2025 · 功能使用全景</title>
 <script>/**
  * Skipped minification because the original files appears to be already minified.
  * Original file: /npm/chart.js@4.4.0/dist/chart.umd.js
@@ -26,8 +26,9 @@
 //# sourceMappingURL=chart.umd.js.map
 </script>
 <style>
+/* === chart-report-light.css === */
 /* chart-report-light.css — 业务图表 HTML 浅色主题（Skill 内模板；产物 HTML 内联或引用此文件内容）
- * 多模块页扩展：CSS 变量 + 分区标题/卡片强调色，用于 manifest 或配置驱动的多图看板。 */
+ * FY2025 多模块页扩展：CSS 变量 + 更多分区标题/卡片强调色，便于多图表年度报告等场景。 */
 
 :root {
   --page-bg: linear-gradient(165deg, #eef1f8 0%, #f4f6fb 40%, #f0f2f5 100%);
@@ -55,7 +56,7 @@ body {
 h1 {
   font-size: 22px;
   font-weight: 700;
-  color: #0f172a;
+  color: #111;
   margin-bottom: 4px;
 }
 
@@ -109,7 +110,7 @@ h1 {
 .kpi .val {
   font-size: 22px;
   font-weight: 700;
-  color: #0f172a;
+  color: #111;
 }
 
 .kpi .sub {
@@ -126,24 +127,13 @@ h1 {
   margin-left: 6px;
 }
 
-/* 默认徽章（非 KPI 区如需复用可另行 class） */
+/* 指标环比：上升红色、下降绿色（A 股常见配色） */
 .badge.up {
-  background: #e6f9f0;
-  color: #10a060;
+  background: #fee2e2;
+  color: #b91c1c;
 }
 
 .badge.down {
-  background: #fff0f0;
-  color: #e04040;
-}
-
-/* 顶部 KPI 卡：上升红色、下降绿色（A 股习惯） */
-.summary-row .badge.up {
-  background: #ffe4e6;
-  color: #e11d48;
-}
-
-.summary-row .badge.down {
   background: #dcfce7;
   color: #15803d;
 }
@@ -214,14 +204,6 @@ h1 {
 
 .chart-grid.three {
   grid-template-columns: 1fr 1fr 1fr;
-}
-
-.chart-grid.one {
-  grid-template-columns: 1fr;
-}
-
-.chart-grid.one .chart-body {
-  min-height: 300px;
 }
 
 .chart-card {
@@ -389,270 +371,115 @@ h1 {
 </style>
 </head>
 <body>
-
-<h1>FY2025 功能使用年度总结</h1>
-<p class="subtitle">时间粒度：<b>自然月</b>（财年 2025-04-01～2026-03-31）。布局为<b>单列</b>，便于通读；相关指标在一张图上用双轴组合展示。<br>
-五块业务：自定义报表、多维进销存、TV、协同任务、委外管理。指标口径见 <code>查询指标/FY2025_功能使用年度总结_口径.md</code>。</p>
-
-<div class="summary-row">
-  <div class="kpi">
-    <div class="title">自定义报表 · 活跃工厂（末月）</div>
-    <div class="val">694<span class="badge up">▲ 85.6%</span></div>
-    <div class="sub">上月 374</div>
-  </div>
-  <div class="kpi">
-    <div class="title">进销存报表 · 活跃工厂（末月）</div>
-    <div class="val">373<span class="badge up">▲ 269.3%</span></div>
-    <div class="sub">上月 101</div>
-  </div>
-  <div class="kpi">
-    <div class="title">TV · 高频在线工厂（末月）</div>
-    <div class="val">515<span class="badge up">▲ 144.1%</span></div>
-    <div class="sub">上月 211</div>
-  </div>
-  <div class="kpi">
-    <div class="title">协同 · 高活跃工厂（末月）</div>
-    <div class="val">76<span class="badge up">▲ 137.5%</span></div>
-    <div class="sub">上月 32</div>
-  </div>
-  <div class="kpi">
-    <div class="title">委外 · 高活跃订单厂（末月，建单≥8天）</div>
-    <div class="val">354<span class="badge up">▲ 84.4%</span></div>
-    <div class="sub">上月 192</div>
-  </div>
-</div>
-
-
-<div class="section">
-  <div class="section-title teal">📊 自定义报表</div>
-  <div class="chart-grid one">
-    <div class="chart-card tone-teal">
-      <h3>自定义报表 · 流量与活跃工厂</h3>
-      <div class="chart-body">
-        <canvas id="c_custom_pv_act"></canvas>
-      </div>
-      <div class="insight teal"><b>解读</b>：柱状为当月页面浏览总量，折线为「月内访问 ≥8 天」的活跃工厂数；二者同向走强通常表示渗透与深度一齐改善。<br><b>数据摘要</b>：峰值 **107316**（26/03），低谷 **43991**（25/11）；末月 **107316**。</div>
-    </div>
-    <div class="chart-card tone-teal">
-      <h3>自定义报表 · 活跃留存</h3>
-      <div class="chart-body">
-        <canvas id="c_custom_ret"></canvas>
-      </div>
-      <div class="insight teal"><b>解读</b>：上月活跃工厂在本月仍达活跃阈值的比例，用于观察是否持续使用而非单月冲刺。<br><b>数据摘要</b>：峰值 **96.0%**（25/12），低谷 **52.1%**（26/02）；近三月上扬约 21%。末月 **93.3%**。</div>
-    </div>
-  </div>
-</div>
-<div class="section">
-  <div class="section-title ">📦 多维进销存报表</div>
-  <div class="chart-grid one">
-    <div class="chart-card tone-blue">
-      <h3>进销存报表 · 流量与活跃工厂</h3>
-      <div class="chart-body">
-        <canvas id="c_multi_pv_act"></canvas>
-      </div>
-      <div class="insight "><b>解读</b>：活跃定义为月内访问 ≥4 天；与 PV 同图便于对照需求弹性与覆盖面。<br><b>数据摘要</b>：峰值 **21574**（26/03），低谷 **5915**（26/01）；近三月上扬约 265%。末月 **21574**。</div>
-    </div>
-    <div class="chart-card tone-blue">
-      <h3>进销存报表 · 活跃留存</h3>
-      <div class="chart-body">
-        <canvas id="c_multi_ret"></canvas>
-      </div>
-      <div class="insight "><b>解读</b>：留存波动可结合月结节奏或版本变更排查。<br><b>数据摘要</b>：峰值 **61.4%**（26/03），低谷 **53.1%**（26/02）；末月 **61.4%**。</div>
-    </div>
-  </div>
-</div>
-<div class="section">
-  <div class="section-title orange">📺 TV 版</div>
-  <div class="chart-grid one">
-    <div class="chart-card tone-orange">
-      <h3>TV · 高频工厂与户均在线天数</h3>
-      <div class="chart-body">
-        <canvas id="c_tv_ge10_days"></canvas>
-      </div>
-      <div class="insight orange"><b>解读</b>：左轴为心跳次数达标的工厂数，右轴为有至少一次 TV 事件的工厂的平均活跃天数，兼顾「量级」与「粘性」。<br><b>数据摘要</b>：峰值 **515**（26/03），低谷 **211**（26/02）；近三月上扬约 39%。末月 **515**。</div>
-    </div>
-  </div>
-</div>
-<div class="section">
-  <div class="section-title green">🤝 协同任务</div>
-  <div class="chart-grid one">
-    <div class="chart-card tone-green">
-      <h3>协同 · 新建任务量与活跃工厂</h3>
-      <div class="chart-body">
-        <canvas id="c_collab_tasks_act"></canvas>
-      </div>
-      <div class="insight green"><b>解读</b>：任务量为三分片合计；活跃厂为月内创建任务覆盖的 distinct 自然日 ≥8 天的工厂。任务涨而厂跌时需关注头部集中或未结堆积。<br><b>数据摘要</b>：峰值 **6899**（26/03），低谷 **215**（25/07）；末月 **6899**。</div>
-    </div>
-    <div class="chart-card tone-green">
-      <h3>协同 · 活跃留存与关联工单占比</h3>
-      <div class="chart-body">
-        <canvas id="c_collab_ret_assoc"></canvas>
-      </div>
-      <div class="insight green"><b>解读</b>：留存基于活跃工厂集合；关联占比为含 associate_id 的任务占比，反映协同与主单据的衔接程度。<br><b>数据摘要</b>：峰值 **93.8%**（26/03），低谷 **47.6%**（26/02）；近三月上扬约 30%。末月 **93.8%**。</div>
-    </div>
-  </div>
-</div>
-<div class="section">
-  <div class="section-title purple">🧾 委外管理</div>
-  <div class="chart-grid one">
-    <div class="chart-card tone-purple">
-      <h3>委外 · 高活跃订单厂、深度收货与转化率</h3>
-      <div class="chart-body">
-        <canvas id="c_out_combo"></canvas>
-      </div>
-      <div class="insight purple"><b>解读</b>：订单厂口径：<b>当月创建订单的 distinct 自然日 ≥8</b>（跨分片合并日期）。柱为订单厂与「收货 ≥8 天」厂，折线为转化率。<br><b>数据摘要</b>：峰值 **354**（26/03），低谷 **163**（25/05）；末月 **354**。</div>
-    </div>
-    <div class="chart-card tone-purple">
-      <h3>委外 · 订单客户留存与户均订单</h3>
-      <div class="chart-body">
-        <canvas id="c_out_ret_avg"></canvas>
-      </div>
-      <div class="insight purple"><b>解读</b>：留存基于高活跃订单厂集合的跨月重合；户均订单 = 当月订单总条数 ÷ 高活跃订单厂数。<br><b>数据摘要</b>：峰值 **92.7%**（26/03），低谷 **51.2%**（26/02）；近三月上扬约 11%。末月 **92.7%**。</div>
-    </div>
-  </div>
-</div>
-
-
-<p style="font-size:11px;color:#94a3b8;margin-top:10px;line-height:1.6">数据：<code>查询指标/FY2025_chart_data.json</code>（按需更新）。渲染：<code>render_dashboard_html.py</code>。口径：<code>查询指标/FY2025_功能使用年度总结_口径.md</code>；Archery：<code>query-business-metrics/scripts/run_archery_query.py</code>。</p>
-
+<h1>FY2025 · 功能使用全景</h1><p class="subtitle">数据：<code>查询指标/FY2025_功能使用年度总结_data.json</code>；口径：<code>查询指标/FY2025_功能使用年度总结_口径.md</code>。<br>
+本页由 business-charts 根据 manifest 自动选型、配色；折线按月相邻点：上升描红、下降描绿，与 KPI 环比徽章一致。</p><div class="summary-row"><div class="kpi"><div class="title">自定义报表 · 持续在用的工厂</div><div class="val">694<span class="badge up">▲ 85.6%</span></div><div class="sub">上月 374</div></div><div class="kpi"><div class="title">多维进销存 · 稳定访问的工厂</div><div class="val">373<span class="badge up">▲ 269.3%</span></div><div class="sub">上月 101</div></div><div class="kpi"><div class="title">生产看板 TV · 高频在线工厂</div><div class="val">515<span class="badge up">▲ 144.1%</span></div><div class="sub">上月 211</div></div><div class="kpi"><div class="title">协同任务 · 高频协作工厂</div><div class="val">76<span class="badge up">▲ 137.5%</span></div><div class="sub">上月 32</div></div><div class="kpi"><div class="title">委外管理 · 收货活跃度转化</div><div class="val">17.1%<span class="badge down">▼ 10.3%</span></div><div class="sub">上月 19.0%</div></div></div><div class="section"><div class="section-title teal">📊 自定义报表</div><p class="subtitle" style="margin-top:-8px;margin-bottom:14px">自助看板渗透到车间、计划等角色的情况；关注「有多少人坚持用」，而不仅是一次性打开。</p><div class="chart-grid three"><div class="chart-card"><h3>在看板里真正「天天用」的客户群</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">持续多日访问自定义报表的工厂规模</p><div class="chart-body"><canvas id="c_custom_users"></canvas></div><div class="insight teal">**自定义报表**：峰值 **694**（26/03），低谷 **371**（25/11）；末月 **694**。 粘性客户规模反映模块是否进入例行工作流；若前低后高，常与推广或场景落地节奏一致。</div></div><div class="chart-card"><h3>点得多不多、摊到每家怎么样</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">总浏览量与「活跃工厂人均 PV」同屏对比</p><div class="chart-body"><canvas id="c_custom_depth"></canvas></div><div class="insight teal">**自定义报表**：总 PV 统计 **峰值 **107316**（26/03），低谷 **43991**（25/11）；末月 **107316**。**；活跃家人均 PV **峰值 **160.6**（25/12），低谷 **117.7**（26/02）；末月 **154.6**。** 人均走高通常意味着单厂使用更深或重载页面增多。</div></div><div class="chart-card"><h3>老客下个月还在不在</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">以上月「高粘性」工厂为母体的月留存</p><div class="chart-body"><canvas id="c_custom_ret"></canvas></div><div class="insight teal">**自定义报表 留存**：区间高 **96.0%**（25/12），低 **52.1%**（26/02）；近三月抬升约 21%；末月 **93.3%**。 留存下滑时优先排查体验、替代工具或组织变动。</div></div></div></div><div class="section"><div class="section-title slate">📦 多维进销存</div><p class="subtitle" style="margin-top:-8px;margin-bottom:14px">进销分析报表是否进入例行周会/月会；与自定义报表相比阈值略宽，反映「定期看』与「深度用」。</p><div class="chart-grid three"><div class="chart-card"><h3>把多维报表当成例行工具的工厂</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">自然月内多次打开进销存多维报表的工厂</p><div class="chart-body"><canvas id="c_multi_users"></canvas></div><div class="insight slate">**多维进销存**：峰值 **373**（26/03），低谷 **49**（26/01）；近三月走强约 661%；末月 **373**。 粘性客户规模反映模块是否进入例行工作流；若前低后高，常与推广或场景落地节奏一致。</div></div><div class="chart-card"><h3>报表热度与人均强度</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">总 PV 与活跃工厂人均 PV</p><div class="chart-body"><canvas id="c_multi_depth"></canvas></div><div class="insight slate">**多维进销存**：总 PV 统计 **峰值 **21574**（26/03），低谷 **5915**（26/01）；近三月走强约 265%；末月 **21574**。**；活跃家人均 PV **峰值 **120.7**（26/01），低谷 **57.8**（26/03）；近三月走弱约 52%；末月 **57.8**。** 人均走高通常意味着单厂使用更深或重载页面增多。</div></div><div class="chart-card"><h3>多维报表用户的粘住程度</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">高粘性工厂月度续用比例</p><div class="chart-body"><canvas id="c_multi_ret"></canvas></div><div class="insight slate">**多维进销存 留存**：区间高 **61.4%**（26/03），低 **53.1%**（26/02）；末月 **61.4%**。 留存下滑时优先排查体验、替代工具或组织变动。</div></div></div></div><div class="section"><div class="section-title orange">📺 生产看板 TV</div><p class="subtitle" style="margin-top:-8px;margin-bottom:14px">车间大屏 / TV 终端是否在持续心跳；高频在线往往与班组长看板习惯相关。</p><div class="chart-grid three"><div class="chart-card"><h3>终端侧「足够热闹」的工厂</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">月内设备心跳达到较高频次的工厂数</p><div class="chart-body"><canvas id="c_tv_users"></canvas></div><div class="insight orange">**生产 TV**：峰值 **515**（26/03），低谷 **211**（26/02）；近三月走强约 39%；末月 **515**。 高频在线家数与车间看板露出、网络与盒子稳定性相关。</div></div><div class="chart-card"><h3>平均每台「挂着看」的天数</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">有过上报的工厂，其当月活跃自然日平均</p><div class="chart-body"><canvas id="c_tv_days"></canvas></div><div class="insight orange">**使用深度**：峰值 **8.8**（25/12），低谷 **4.6**（26/02）；末月 **8.3**。 平均活跃日上升说明大屏被日复一日打开，而不只是一两次安装调试。</div></div></div></div><div class="section"><div class="section-title green">🤝 协同任务</div><p class="subtitle" style="margin-top:-8px;margin-bottom:14px">跨部门任务是否沉淀为日常协作；任务量、人均与关联工单比例一起看出治理深度。</p><div class="chart-grid"><div class="chart-card"><h3>把协同任务当例行流程的工厂</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">多月创建任务达到高节奏的工厂数</p><div class="chart-body"><canvas id="c_col_users"></canvas></div><div class="insight green">**协同任务**：峰值 **76**（26/03），低谷 **10**（25/08）；近三月走强约 21%；末月 **76**。 粘性客户规模反映模块是否进入例行工作流；若前低后高，常与推广或场景落地节奏一致。</div></div><div class="chart-card"><h3>协作高活客户的续用</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">上月高频协作工厂在本月仍高频的比例</p><div class="chart-body"><canvas id="c_col_ret"></canvas></div><div class="insight green">**协同任务 留存**：区间高 **93.8%**（26/03），低 **47.6%**（26/02）；近三月抬升约 30%；末月 **93.8%**。 留存下滑时优先排查体验、替代工具或组织变动。</div></div><div class="chart-card"><h3>任务堆量与单厂密度</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">创建条数与「每个高活厂平均摊多少任务」</p><div class="chart-body"><canvas id="c_col_tasks"></canvas></div><div class="insight green">**协同吞吐**：任务量 峰值 **6899**（26/03），低谷 **215**（25/07）；近三月走强约 9%；末月 **6899**。 高活厂均任务 峰值 **161.6**（25/08），低谷 **74.5**（26/02）；近三月走弱约 9%；末月 **90.8**。 二者一齐上行通常代表协同在更多场景被复制。</div></div><div class="chart-card"><h3>任务与工单的治理衔接</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">带关联单据的任务占比</p><div class="chart-body"><canvas id="c_col_assoc"></canvas></div><div class="insight green">**关联治理**：区间高 **19.5%**（26/02），低 **0.0%**（25/04）；近三月抬升约 34%；末月 **18.6%**。 占比提高有利于追溯工单与任务闭环。</div></div></div></div><div class="section"><div class="section-title purple">🧾 委外管理</div><p class="subtitle" style="margin-top:-8px;margin-bottom:14px">从「有人下单」到「收货侧也够勤奋」覆盖哪些客户；转化与单厂订单密度一起看供需是否跑通。</p><div class="chart-grid three"><div class="chart-card"><h3>下单家数、收货够勤的家数</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">左轴工厂家数；右轴为收货高活跃厂占下单厂比例（%）</p><div class="chart-body"><canvas id="c_out_use"></canvas></div><div class="insight purple">**委外链路**：下单厂 峰值 **1472**（26/03），低谷 **397**（25/04）；近三月走强约 23%；末月 **1472**。；收货侧高活跃厂 峰值 **260**（26/01），低谷 **128**（25/05）；末月 **251**。；转化率 区间高 **33.2%**（25/04），低 **17.1%**（26/03）；近三月回落约 21%；末月 **17.1%**。 转化偏低时优先看收货执行是否跟上发单节奏。</div></div><div class="chart-card"><h3>下月还愿不愿意接着委外</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">以上月有单工厂为母体的续用比例</p><div class="chart-body"><canvas id="c_out_ret"></canvas></div><div class="insight purple">**委外下单 留存**：区间高 **80.3%**（26/03），低 **52.8%**（26/02）；近三月抬升约 23%；末月 **80.3%**。 留存下滑时优先排查体验、替代工具或组织变动。</div></div><div class="chart-card"><h3>单家下单「够不够深」</h3><p style="font-size:12px;color:#777;margin:-6px 0 10px">平均每家有单工厂的月订单条数</p><div class="chart-body"><canvas id="c_out_avg_ord"></canvas></div><div class="insight purple">**单厂深度**：峰值 **165.3**（25/09），低谷 **41.9**（26/02）；末月 **73.9**。 单厂订单加深通常说明委外在单客户侧用得越来越细。</div></div></div></div><p style="font-size:11px;color:#aaa;margin-top:16px">渲染：<code>business-charts/render_timeseries_dashboard.py</code>；场景化结论可在导出后补充。</p>
 <script>
-const labels = ["25/04", "25/05", "25/06", "25/07", "25/08", "25/09", "25/10", "25/11", "25/12", "26/01", "26/02", "26/03"];
 
-function mkLine(label, data, color, dash) {
-  return {
+const labels = ["25/04", "25/05", "25/06", "25/07", "25/08", "25/09", "25/10", "25/11", "25/12", "26/01", "26/02", "26/03"];
+const TrendUp = '#dc2626', TrendDown = '#16a34a', TrendFlat = '#64748b';
+
+function mkLine(label, data, color, dash, trendStroke) {
+  const ds = {
     type: 'line',
     label, data,
-    borderColor: color, backgroundColor: color+'22',
-    pointBackgroundColor: color, pointRadius: 4, pointHoverRadius: 6,
-    borderWidth: 2.2, borderDash: dash || [], tension: 0.35, fill: false, spanGaps: true,
+    borderColor: color,
+    backgroundColor: color + '18',
+    pointBackgroundColor: color,
+    pointRadius: 4,
+    pointHoverRadius: 6,
+    borderWidth: 2.2,
+    borderDash: dash || [],
+    tension: 0.35,
+    fill: false,
+    spanGaps: true,
   };
+  if (trendStroke) {
+    ds.segment = {
+      borderColor: ctx => {
+        const y0 = ctx.p0.parsed.y, y1 = ctx.p1.parsed.y;
+        if (y0 == null || y1 == null) return color;
+        if (y1 > y0) return TrendUp;
+        if (y1 < y0) return TrendDown;
+        return TrendFlat;
+      }
+    };
+  }
+  return ds;
 }
-function mkBar(label, data, color, yAxisID) {
-  return { type:'bar', label, data, backgroundColor: color+'cc', borderRadius: 6, yAxisID: yAxisID || 'y' };
+function mkBar(label, data, color) {
+  return { type: 'bar', label, data, backgroundColor: color + 'bb', borderRadius: 6 };
 }
 const baseOpts = (yLabel) => ({
   responsive: true,
   maintainAspectRatio: false,
   layout: { padding: { top: 10, right: 10, bottom: 6, left: 8 } },
-  interaction: { mode:'index', intersect:false },
+  interaction: { mode: 'index', intersect: false },
   plugins: {
-    legend: { position:'top', labels:{ font:{size:12}, padding:12 } },
-    tooltip: { padding:10, cornerRadius:8 },
+    legend: { position: 'top', labels: { font: { size: 12 }, padding: 12 } },
+    tooltip: { padding: 10, cornerRadius: 8 },
   },
   scales: {
-    x: { grid:{ color:'rgba(148,163,184,0.25)' }, ticks:{font:{size:12}, color:'#64748b'} },
+    x: { grid: { color: 'rgba(15,23,42,0.06)' }, ticks: { font: { size: 12 } } },
     y: {
-      grid:{ color:'rgba(148,163,184,0.25)' },
-      ticks:{ font:{size:12}, padding: 6, color:'#64748b' },
-      title:{ display:!!yLabel, text:yLabel, color:'#475569' },
-      beginAtZero:true,
+      grid: { color: 'rgba(15,23,42,0.06)' },
+      ticks: { font: { size: 12 }, padding: 6 },
+      title: { display: !!yLabel, text: yLabel },
+      beginAtZero: true,
       grace: '8%',
     },
   },
 });
-const pctOpts = (yLabel='%') => {
-  const o = baseOpts(yLabel);
-  o.scales.y.min = 0; o.scales.y.max = 100; o.scales.y.grace = 0;
+const pctOpts = () => {
+  const o = baseOpts('%');
+  o.scales.y.min = 0;
+  o.scales.y.max = 100;
+  o.scales.y.grace = 0;
   o.scales.y.ticks.callback = v => v + '%';
-  o.scales.y.ticks.color = '#64748b';
-  o.plugins.tooltip.callbacks = { label: ctx => ctx.dataset.label+': '+(ctx.parsed.y??'-')+'%' };
+  o.plugins.tooltip.callbacks = { label: ctx => ctx.dataset.label + ': ' + (ctx.parsed.y ?? '-') + '%' };
   return o;
 };
 const dualOpts = (yLeft, yRight) => ({
   responsive: true,
   maintainAspectRatio: false,
-  layout: { padding: { top: 10, right: 12, bottom: 6, left: 8 } },
-  interaction: { mode:'index', intersect:false },
+  layout: { padding: { top: 10, right: 14, bottom: 6, left: 8 } },
+  interaction: { mode: 'index', intersect: false },
   plugins: {
-    legend: { position:'top', labels:{ font:{size:12}, padding:12 } },
-    tooltip: { padding:10, cornerRadius:8 },
+    legend: { position: 'top', labels: { font: { size: 12 }, padding: 12 } },
+    tooltip: { padding: 10, cornerRadius: 8 },
   },
   scales: {
-    x: { grid:{ color:'rgba(148,163,184,0.25)' }, ticks:{font:{size:12}, color:'#64748b'} },
+    x: { grid: { color: 'rgba(15,23,42,0.06)' }, ticks: { font: { size: 12 } } },
     y: {
-      position:'left', beginAtZero:true, grace:'8%',
-      title:{display:true,text:yLeft, color:'#475569'}, grid:{color:'rgba(148,163,184,0.25)'},
-      ticks:{ font:{size:12}, padding: 6, color:'#64748b' },
+      position: 'left',
+      beginAtZero: true,
+      grace: '8%',
+      title: { display: true, text: yLeft },
+      grid: { color: 'rgba(15,23,42,0.06)' },
+      ticks: { font: { size: 12 }, padding: 6 },
     },
     y1: {
-      position:'right', beginAtZero:true, grace:'8%',
-      title:{display:true,text:yRight, color:'#475569'}, grid:{drawOnChartArea:false},
-      ticks:{ font:{size:12}, padding: 6, color:'#64748b' },
+      position: 'right',
+      beginAtZero: true,
+      grace: '8%',
+      title: { display: true, text: yRight },
+      grid: { drawOnChartArea: false },
+      ticks: { font: { size: 12 }, padding: 6 },
     },
   },
 });
-
-new Chart(document.getElementById('c_custom_pv_act'), {
-  type: 'bar',
-  data: { labels, datasets: [
-    mkBar('PV', [0, 0, 0, 0, 0, 0, 0, 43991, 106823, 107030, 44022, 107316], '#0f766e', 'y'),
-    {...mkLine('活跃工厂', [0, 0, 0, 0, 0, 0, 0, 371, 665, 674, 374, 694], '#475569', [6, 3]), yAxisID:'y1'}
-  ]},
-  options: dualOpts('PV（次）','活跃工厂数')
-});
-new Chart(document.getElementById('c_custom_ret'), {
-  type: 'line',
-  data: { labels, datasets: [
-    {...mkLine('月留存', [null, null, null, null, null, null, null, null, 95.96, 76.84, 52.08, 93.32], '#0f766e', []), yAxisID:'y'}
-  ]},
-  options: pctOpts('%')
-});
-new Chart(document.getElementById('c_multi_pv_act'), {
-  type: 'bar',
-  data: { labels, datasets: [
-    mkBar('PV', [0, 0, 0, 0, 0, 0, 0, 0, 0, 5915, 8500, 21574], '#4361ee', 'y'),
-    {...mkLine('活跃工厂', [0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 101, 373], '#475569', [6, 3]), yAxisID:'y1'}
-  ]},
-  options: dualOpts('PV（次）','活跃工厂数')
-});
-new Chart(document.getElementById('c_multi_ret'), {
-  type: 'line',
-  data: { labels, datasets: [
-    {...mkLine('月留存', [null, null, null, null, null, null, null, null, null, null, 53.06, 61.39], '#4361ee', []), yAxisID:'y'}
-  ]},
-  options: pctOpts('%')
-});
-new Chart(document.getElementById('c_tv_ge10_days'), {
-  type: 'line',
-  data: { labels, datasets: [
-    {...mkLine('高频工厂', [0, 0, 0, 0, 0, 0, 0, 225, 351, 370, 211, 515], '#c2410c', []), yAxisID:'y'},
-    {...mkLine('户均活跃天数', [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 4.92, 8.82, 8.27, 4.57, 8.35], '#475569', [6, 3]), yAxisID:'y1'}
-  ]},
-  options: dualOpts('高频工厂数（≥10 次/月）','户均活跃天数')
-});
-new Chart(document.getElementById('c_collab_tasks_act'), {
-  type: 'bar',
-  data: { labels, datasets: [
-    mkBar('新建任务', [0, 0, 0, 215, 1616, 5066, 4203, 5102, 5953, 6309, 2385, 6899], '#15803d', 'y'),
-    {...mkLine('活跃工厂', [0, 0, 0, 0, 10, 39, 39, 50, 54, 63, 32, 76], '#475569', [6, 3]), yAxisID:'y1'}
-  ]},
-  options: dualOpts('任务条数','活跃工厂数')
-});
-new Chart(document.getElementById('c_collab_ret_assoc'), {
-  type: 'line',
-  data: { labels, datasets: [
-    {...mkLine('月留存', [null, null, null, null, null, 80.00, 79.49, 87.18, 78.00, 72.22, 47.62, 93.75], '#15803d', []), yAxisID:'y'},
-    {...mkLine('关联任务占比', [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 13.88, 19.50, 18.61], '#475569', [6, 3]), yAxisID:'y'}
-  ]},
-  options: pctOpts('%')
-});
-new Chart(document.getElementById('c_out_combo'), {
-  type: 'bar',
-  data: { labels, datasets: [
-    mkBar('高活跃订单厂（建单≥8天）', [165, 163, 190, 220, 222, 229, 232, 267, 320, 322, 192, 354], '#6d28d9', 'y'),
-    mkBar('深度收货厂（≥8天）', [132, 128, 137, 173, 184, 178, 182, 216, 222, 226, 156, 244], '#a78bfa', 'y'),
-    {...mkLine('转化率', [80.00, 78.53, 72.11, 78.64, 82.88, 77.73, 78.45, 80.90, 69.38, 70.19, 81.25, 68.93], '#475569', [6, 3]), yAxisID:'y1'}
-  ]},
-  options: dualOpts('工厂数','转化率（%）')
-});
-new Chart(document.getElementById('c_out_ret_avg'), {
-  type: 'line',
-  data: { labels, datasets: [
-    {...mkLine('月留存', [null, 78.79, 86.50, 84.21, 75.91, 82.88, 79.48, 87.93, 83.90, 83.44, 51.24, 92.71], '#6d28d9', []), yAxisID:'y'},
-    {...mkLine('户均订单', [295.27, 288.04, 281.88, 302.02, 359.29, 477.20, 432.16, 416.96, 291.49, 289.18, 179.36, 307.29], '#475569', [6, 3]), yAxisID:'y1'}
-  ]},
-  options: dualOpts('留存（%）','户均订单数')
-});
+const dualPctRight = (yLeft, yRight) => {
+  const o = dualOpts(yLeft, yRight);
+  o.scales.y1.ticks.callback = v => v + '%';
+  o.plugins.tooltip.callbacks = {
+    label: ctx => {
+      const y = ctx.parsed.y;
+      if (!ctx.dataset || ctx.dataset.yAxisID !== 'y1') return ctx.dataset.label + ': ' + y;
+      return ctx.dataset.label + ': ' + y + '%';
+    },
+  };
+  return o;
+};
+new Chart(document.getElementById('c_custom_users'), { type: 'line', data: { labels, datasets: [mkLine("高粘性工厂", [0, 0, 0, 0, 0, 0, 0, 371, 665, 674, 374, 694], '#0e7490', [], true)] }, options: baseOpts("工厂（家）") });new Chart(document.getElementById('c_custom_depth'), { type: 'bar', data: { labels, datasets: [mkBar("月 PV", [0, 0, 0, 0, 0, 0, 0, 43991, 106823, 107030, 44022, 107316], '#0e7490'), {...mkLine("活跃家人均 PV", [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 118.57, 160.64, 158.80, 117.71, 154.63], '#14b8a6', [6,4], false), yAxisID: 'y1'}] }, options: dualOpts("PV（次）","次/家") });new Chart(document.getElementById('c_custom_ret'), { type: 'line', data: { labels, datasets: [mkLine("月留存", [null, null, null, null, null, null, null, null, 96.0, 76.8, 52.1, 93.3], '#0e7490', [], true)] }, options: pctOpts() });new Chart(document.getElementById('c_multi_users'), { type: 'line', data: { labels, datasets: [mkLine("稳定使用工厂", [0, 0, 0, 0, 0, 0, 0, 0, 0, 49, 101, 373], '#4338ca', [], true)] }, options: baseOpts("工厂（家）") });new Chart(document.getElementById('c_multi_depth'), { type: 'bar', data: { labels, datasets: [mkBar("月 PV", [0, 0, 0, 0, 0, 0, 0, 0, 0, 5915, 8500, 21574], '#4338ca'), {...mkLine("活跃家人均 PV", [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 120.71, 84.16, 57.84], '#6366f1', [6,4], false), yAxisID: 'y1'}] }, options: dualOpts("PV（次）","次/家") });new Chart(document.getElementById('c_multi_ret'), { type: 'line', data: { labels, datasets: [mkLine("月留存", [null, null, null, null, null, null, null, null, null, null, 53.1, 61.4], '#4338ca', [], true)] }, options: pctOpts() });new Chart(document.getElementById('c_tv_users'), { type: 'line', data: { labels, datasets: [mkLine("高频在线工厂", [0, 0, 0, 0, 0, 0, 0, 225, 351, 370, 211, 515], '#c2410c', [], true)] }, options: baseOpts("工厂（家）") });new Chart(document.getElementById('c_tv_days'), { type: 'line', data: { labels, datasets: [mkLine("平均活跃日/厂", [0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 4.92, 8.82, 8.27, 4.57, 8.35], '#c2410c', [], true)] }, options: baseOpts("天") });new Chart(document.getElementById('c_col_users'), { type: 'line', data: { labels, datasets: [mkLine("高频协作工厂", [0, 0, 0, 0, 10, 39, 39, 50, 54, 63, 32, 76], '#047857', [], true)] }, options: baseOpts("工厂（家）") });new Chart(document.getElementById('c_col_ret'), { type: 'line', data: { labels, datasets: [mkLine("月留存", [null, null, null, null, null, 80.0, 79.5, 87.2, 78.0, 72.2, 47.6, 93.8], '#047857', [], true)] }, options: pctOpts() });new Chart(document.getElementById('c_col_tasks'), { type: 'bar', data: { labels, datasets: [mkBar("月创建任务", [0, 0, 0, 215, 1616, 5066, 4203, 5102, 5953, 6309, 2385, 6899], '#047857'), {...mkLine("高活厂均任务", [0.00, 0.00, 0.00, 0.00, 161.60, 129.90, 107.77, 102.04, 110.24, 100.14, 74.53, 90.78], '#34d399', [6,4], false), yAxisID: 'y1'}] }, options: dualOpts("条","条/厂") });new Chart(document.getElementById('c_col_assoc'), { type: 'line', data: { labels, datasets: [mkLine("关联任务占比", [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 13.9, 19.5, 18.6], '#047857', [], true)] }, options: pctOpts() });new Chart(document.getElementById('c_out_use'), { type: 'bar', data: { labels, datasets: [mkBar("有单工厂", [397, 431, 476, 537, 600, 661, 641, 773, 1195, 1198, 821, 1472], '#6d28d9'), mkBar("收货高活跃工厂", [132, 128, 134, 174, 187, 187, 187, 217, 223, 260, 156, 251], '#a78bfa'), {...mkLine("转化（右轴）", [33.2, 29.7, 28.2, 32.4, 31.2, 28.3, 29.2, 28.1, 18.7, 21.7, 19.0, 17.1], '#4c1d95', [6,4], true), yAxisID: 'y1'}] }, options: dualPctRight("工厂（家）","转化率（%）") });new Chart(document.getElementById('c_out_ret'), { type: 'line', data: { labels, datasets: [mkLine("订单厂月留存", [null, 72.3, 75.6, 77.1, 74.5, 75.3, 73.2, 78.5, 77.5, 65.3, 52.8, 80.3], '#6d28d9', [], true)] }, options: pctOpts() });new Chart(document.getElementById('c_out_avg_ord'), { type: 'line', data: { labels, datasets: [mkLine("单厂月均订单数", [122.72, 108.93, 112.52, 123.73, 132.94, 165.32, 156.41, 144.02, 78.06, 77.73, 41.95, 73.90], '#6d28d9', [], true)] }, options: baseOpts("条/家") });
 </script>
 </body>
 </html>
