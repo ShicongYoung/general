@@ -4,8 +4,7 @@
 
 | 文件 | 说明 |
 |------|------|
-| `FY2025_功能使用年度总结.html` | FY2025 五模块月度趋势 + 洞察（数据 `查询指标/FY2025_chart_data.json` + `render_dashboard_html.py` + `查询指标/FY2025_dashboard.manifest.json`，内联 Chart.js） |
-| `FY2025_功能使用年度总结_通用图表版.html` | 配置驱动示例页（由 `generate_business_charts.py` + `chart-config.example.json` 或自建配置生成） |
-| `业务图表_manifest示例.html` | manifest + `render_dashboard_html.py` 通用示例（数据与声明在 business-charts 的 `cache/example_dashboard_data.json`、`manifests/example_dashboard.manifest.json`） |
+| `FY2025_功能使用年度总结.html` | FY2025 五模块月度趋势 + 洞察（数据 `查询指标/FY2025_chart_data.json` + `render_dashboard_html.py` + `查询指标/FY2025_dashboard.manifest.json`，Chart.js 使用 CDN） |
+| `FY2025_功能使用年度总结_通用图表版.html` | 历史产物（已生成的配置驱动示例页；当前不再保留配置驱动脚本） |
 
 **取数**见 **`.cursor/skills/query-business-metrics/SKILL.md`**；**出图**见 **`.cursor/skills/business-charts/SKILL.md`**。

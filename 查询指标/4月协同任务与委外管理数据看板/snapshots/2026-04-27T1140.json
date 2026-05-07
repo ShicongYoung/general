@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "label": "2026年4月协同任务与委外管理周度趋势（截至2026-04-26）",
+    "schema_version": 2,
+    "period": {
+      "start": "2026-04-01",
+      "end": "2026-04-26",
+      "grain": "week",
+      "note": "截至当前日期上一完整日；首周为04/01-04/05的月初不完整周。"
+    },
+    "definitions": "协同任务：任务数为dt_collaborative_task创建数；活跃工厂为当期创建过任务的org_id并集；覆盖工厂为当期至少2天创建任务的org_id；留存=上期覆盖∩本期覆盖/上期覆盖；工单创建占比=associate_id非空任务/任务总数。委外管理：订单客户为dt_outsource_order当期org_id并集；收发客户为dt_outsource_post当期org_id并集；覆盖客户=订单客户∩收发客户；订单到收发转化=覆盖客户/订单客户；留存=上期覆盖∩本期覆盖/上期覆盖。ADB三分片按org_id并集去重。",
+    "summary": {
+      "collab_tasks": 8687,
+      "collab_active_orgs": 480,
+      "collab_covered_orgs_2day": 175,
+      "collab_active_conversion": 0.3645833333333333,
+      "collab_complete_rate": 0.5745366639806607,
+      "collab_assoc_rate": 0.14619546448716472,
+      "outsource_order_customers": 1409,
+      "outsource_post_customers": 1139,
+      "outsource_covered_customers": 1110,
+      "outsource_conversion": 0.7877927608232789,
+      "outsource_order_count": 102138,
+      "outsource_post_count": 153396
+    }
+  },
+  "months": [
+    "2026-04-01",
+    "2026-04-06",
+    "2026-04-13",
+    "2026-04-20"
+  ],
+  "labels": [
+    "04/01-04/05",
+    "04/06-04/12",
+    "04/13-04/19",
+    "04/20-04/26"
+  ],
+  "collab": {
+    "2026-04-01": {
+      "tasks": 959,
+      "act": 139,
+      "covered": 65,
+      "active_conversion": 0.4676258992805755,
+      "ret": null,
+      "complete_rate": 0.6246089676746611,
+      "assoc_rate": 0.12304483837330553
+    },
+    "2026-04-06": {
+      "tasks": 2449,
+      "act": 233,
+      "covered": 107,
+      "active_conversion": 0.4592274678111588,
+      "ret": 0.8307692307692308,
+      "complete_rate": 0.6133115557370356,
+      "assoc_rate": 0.11923233973050225
+    },
+    "2026-04-13": {
+      "tasks": 2674,
+      "act": 244,
+      "covered": 117,
+      "active_conversion": 0.47950819672131145,
+      "ret": 0.719626168224299,
+      "complete_rate": 0.5654450261780105,
+      "assoc_rate": 0.1293941660433807
+    },
+    "2026-04-20": {
+      "tasks": 2605,
+      "act": 237,
+      "covered": 105,
+      "active_conversion": 0.4430379746835443,
+      "ret": 0.6666666666666666,
+      "complete_rate": 0.5289827255278311,
+      "assoc_rate": 0.19731285988483685
+    }
+  },
+  "outsource": {
+    "2026-04-01": {
+      "order_customers": 644,
+      "post_customers": 523,
+      "covered": 472,
+      "conversion": 0.7329192546583851,
+      "ret": null,
+      "order_count": 14765,
+      "post_count": 20731
+    },
+    "2026-04-06": {
+      "order_customers": 807,
+      "post_customers": 626,
+      "covered": 595,
+      "conversion": 0.7372986369268897,
+      "ret": 0.7563559322033898,
+      "order_count": 27238,
+      "post_count": 43053
+    },
+    "2026-04-13": {
+      "order_customers": 896,
+      "post_customers": 699,
+      "covered": 656,
+      "conversion": 0.7321428571428571,
+      "ret": 0.7310924369747899,
+      "order_count": 30137,
+      "post_count": 43474
+    },
+    "2026-04-20": {
+      "order_customers": 912,
+      "post_customers": 711,
+      "covered": 670,
+      "conversion": 0.7346491228070176,
+      "ret": 0.676829268292683,
+      "order_count": 29998,
+      "post_count": 46138
+    }
+  }
+}

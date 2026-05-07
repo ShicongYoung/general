@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "dashboards": {
+    "collab_weekly_v1": {
+      "description": "协同任务：按周统计活跃工厂、创建任务、留存、完成率、效率、评论活跃度。",
+      "source": "adb",
+      "required_tables": [
+        "dt_collaborative_task",
+        "dt_collaborative_task_log"
+      ],
+      "manifest_template": "collab_weekly_v1.json",
+      "md_template": "dashboard_run_report_v1.md",
+      "lookback_days_default": 182
+    }
+  }
+}
+

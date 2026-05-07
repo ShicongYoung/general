@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>4月协同任务与委外管理数据看板</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+/* chart-report-light.css — 业务图表 HTML 浅色主题（Skill 内模板；产物 HTML 内联或引用此文件内容）
+ * 多模块页扩展：CSS 变量 + 分区标题/卡片强调色，用于 manifest 或配置驱动的多图看板。 */
+
+:root {
+  /* 汇报风：白底、浅灰分割、低噪音强调色 */
+  --page-bg: #f6f7fb;
+  --page-fg: #0f172a;
+  --muted: #64748b;
+  --line: rgba(148, 163, 184, 0.22);
+  --card: #ffffff;
+  --card-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+  --card-shadow-hover: 0 14px 40px rgba(15, 23, 42, 0.08);
+  --accent-border-w: 2px;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --accent-blue: #4f6ef7;
+  --accent-teal: #2f9e85;
+  --accent-purple: #7c5ce6;
+  --accent-amber: #d9774a;
+
+  /* 现代产品风 tokens */
+  --container-w: 1240px;
+  --container-pad-x: 28px;
+  --container-pad-y: 24px;
+  --title-fg: #0b1220;
+  --text-fg: #0f172a;
+  --subtle-fg: #64748b;
+  --card-border: rgba(148, 163, 184, 0.22);
+  --card-bg: #ffffff;
+  --tint-alpha: 0.07;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--page-bg);
+  color: var(--page-fg);
+  padding: var(--container-pad-y) var(--container-pad-x) 34px;
+  min-height: 100vh;
+}
+
+.page {
+  max-width: var(--container-w);
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--title-fg);
+  margin-bottom: 6px;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--subtle-fg);
+  margin-bottom: 14px;
+  line-height: 1.65;
+}
+
+.page > h1,
+.page > .subtitle {
+  padding-left: 2px;
+}
+
+.footer-note {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 12px;
+  line-height: 1.6;
+}
+
+/* KPI 摘要行（多模块年度总结等页面使用） */
+.summary-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.kpi {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  flex: 1;
+  min-width: 160px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--card-border);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.kpi:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-1px);
+  border-color: rgba(148, 163, 184, 0.34);
+}
+
+.kpi.accent-blue {
+  border-top: var(--accent-border-w) solid #4361ee;
+}
+
+.kpi.accent-teal {
+  border-top: var(--accent-border-w) solid #118ab2;
+}
+
+.kpi.accent-coral {
+  border-top: var(--accent-border-w) solid #e85d75;
+}
+
+.kpi.accent-amber {
+  border-top: var(--accent-border-w) solid #f4a261;
+}
+
+.kpi .title {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 4px;
+  letter-spacing: 0.2px;
+}
+
+.kpi .val {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f2937;
+  letter-spacing: 0.2px;
+}
+
+.kpi .sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 6px;
+}
+
+/* 默认徽章（非 KPI 区如需复用可另行 class） */
+.badge.up {
+  background: #e6f9f0;
+  color: #10a060;
+}
+
+.badge.down {
+  background: #fff0f0;
+  color: #e04040;
+}
+
+/* 顶部 KPI 卡：上升红色、下降绿色（A 股习惯） */
+.summary-row .badge.up {
+  background: #ffe4e6;
+  color: #e11d48;
+}
+
+.summary-row .badge.down {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.section {
+  margin-bottom: 26px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  background: var(--card-bg);
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.section-title::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(79, 110, 247, var(--tint-alpha));
+  opacity: 0;
+  pointer-events: none;
+}
+
+.section-title > * {
+  position: relative;
+}
+
+.section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  background: rgba(15, 23, 42, 0.03);
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.26);
+  flex: 0 0 auto;
+  color: #475569;
+}
+
+.section-icon svg {
+  width: 19px;
+  height: 19px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.section-title.green,
+.section-title.orange,
+.section-title.purple,
+.section-title.teal,
+.section-title.coral,
+.section-title.rose,
+.section-title.slate,
+.section-title.indigo,
+.section-title.amber,
+.section-title.mint,
+.section-title.crimson {
+  border-left: 4px solid var(--accent-blue);
+}
+
+.section-title.green {
+  border-left-color: var(--accent-teal);
+}
+.section-title.green::before {
+  opacity: 1;
+  background: rgba(47, 158, 133, var(--tint-alpha));
+}
+
+.section-title.orange {
+  border-left-color: var(--accent-amber);
+}
+.section-title.orange::before {
+  opacity: 1;
+  background: rgba(217, 119, 74, var(--tint-alpha));
+}
+
+.section-title.purple {
+  border-left-color: var(--accent-purple);
+}
+.section-title.purple::before {
+  opacity: 1;
+  background: rgba(124, 92, 230, var(--tint-alpha));
+}
+
+.section-title.teal {
+  border-left-color: #118ab2;
+}
+.section-title.teal::before {
+  opacity: 1;
+  background: rgba(17, 138, 178, var(--tint-alpha));
+}
+
+.section-title.coral {
+  border-left-color: #e85d75;
+}
+.section-title.coral::before {
+  opacity: 1;
+  background: rgba(232, 93, 117, var(--tint-alpha));
+}
+
+.section-title.rose {
+  border-left-color: #be185d;
+}
+.section-title.rose::before {
+  opacity: 1;
+  background: rgba(190, 24, 93, var(--tint-alpha));
+}
+
+.section-title.slate {
+  border-left-color: #475569;
+}
+.section-title.slate::before {
+  opacity: 1;
+  background: rgba(71, 85, 105, 0.06);
+}
+
+.section-title.indigo {
+  border-left-color: #4f46e5;
+}
+.section-title.indigo::before {
+  opacity: 1;
+  background: rgba(79, 70, 229, var(--tint-alpha));
+}
+
+.section-title.amber {
+  border-left-color: #d97706;
+}
+.section-title.amber::before {
+  opacity: 1;
+  background: rgba(217, 119, 6, var(--tint-alpha));
+}
+
+.section-title.mint {
+  border-left-color: #059669;
+}
+.section-title.mint::before {
+  opacity: 1;
+  background: rgba(5, 150, 105, var(--tint-alpha));
+}
+
+.section-title.crimson {
+  border-left-color: #9f1239;
+}
+.section-title.crimson::before {
+  opacity: 1;
+  background: rgba(159, 18, 57, var(--tint-alpha));
+}
+
+.chart-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.chart-grid.three {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.chart-grid.one {
+  grid-template-columns: 1fr;
+}
+
+.chart-grid.one .chart-body {
+  min-height: 300px;
+}
+
+.chart-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 18px 18px 14px;
+  box-shadow: var(--card-shadow);
+  min-height: 0;
+  border: 1px solid var(--card-border);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.chart-card:hover {
+  box-shadow: var(--card-shadow-hover);
+  transform: translateY(-1px);
+  border-color: rgba(148, 163, 184, 0.34);
+}
+
+/* 与 section 主题呼应的卡片顶条（可选类名） */
+.chart-card.tone-blue {
+  border-top: var(--accent-border-w) solid #4361ee;
+}
+
+.chart-card.tone-green {
+  border-top: var(--accent-border-w) solid rgba(47, 158, 133, 0.55);
+}
+
+.chart-card.tone-purple {
+  border-top: var(--accent-border-w) solid #6f58ff;
+}
+
+.chart-card.tone-orange {
+  border-top: var(--accent-border-w) solid rgba(217, 119, 74, 0.55);
+}
+
+.chart-card.tone-teal {
+  border-top: var(--accent-border-w) solid #118ab2;
+}
+
+.chart-card.tone-coral {
+  border-top: var(--accent-border-w) solid #e85d75;
+}
+
+.chart-card.tone-rose {
+  border-top: var(--accent-border-w) solid #be185d;
+}
+
+.chart-card.tone-slate {
+  border-top: var(--accent-border-w) solid #475569;
+}
+
+.chart-card.tone-indigo {
+  border-top: var(--accent-border-w) solid #4f46e5;
+}
+
+.chart-card.tone-amber {
+  border-top: var(--accent-border-w) solid #d97706;
+}
+
+.chart-card.tone-mint {
+  border-top: var(--accent-border-w) solid #059669;
+}
+
+.chart-card h3 {
+  font-size: 14px;
+  font-weight: 650;
+  color: #1f2937;
+  margin-bottom: 10px;
+  letter-spacing: 0.1px;
+}
+
+/*
+ * 绘图区：固定高度 + Chart.js options.maintainAspectRatio = false，避免画布被压扁、y 轴可读性差。
+ * 生成 HTML 时请将 <canvas> 包在本容器内。
+ */
+.chart-body {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  min-height: 260px;
+  border-radius: var(--radius-sm);
+  background: #fcfdff;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+}
+
+.chart-body.tall {
+  height: 340px;
+  min-height: 300px;
+}
+
+.chart-body canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+}
+
+.insight {
+  margin-top: 12px;
+  font-size: 12.5px;
+  color: #334155;
+  line-height: 1.7;
+  background: #f8fafc;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+}
+
+.insight.green {
+  border-left: 3px solid rgba(47, 158, 133, 0.55);
+}
+
+.insight.purple {
+  border-left-color: #6f58ff;
+}
+
+.insight.orange {
+  border-left: 3px solid rgba(217, 119, 74, 0.55);
+}
+
+.insight.teal {
+  border-left-color: #118ab2;
+}
+
+.insight.coral {
+  border-left-color: #e85d75;
+  background: linear-gradient(90deg, #fff5f7 0%, #f8f9fd 100%);
+}
+
+.insight.rose {
+  border-left-color: #be185d;
+  background: linear-gradient(90deg, #fdf2f8 0%, #f8fafc 100%);
+}
+
+.insight.slate {
+  border-left-color: #475569;
+  background: #f8fafc;
+}
+
+.insight.indigo {
+  border-left-color: #4f46e5;
+  background: linear-gradient(90deg, #eef2ff 0%, #f8f9fd 100%);
+}
+
+.insight.amber {
+  border-left-color: #d97706;
+  background: linear-gradient(90deg, #fffbeb 0%, #f8f9fd 100%);
+}
+
+.insight.mint {
+  border-left-color: #059669;
+  background: linear-gradient(90deg, #ecfdf5 0%, #f8f9fd 100%);
+}
+
+.insight.crimson {
+  border-left-color: #9f1239;
+  background: linear-gradient(90deg, #fff1f2 0%, #f8fafc 100%);
+}
+
+/* 指标解释（manifest metric_notes） */
+.metric-notes {
+  margin: 10px 0 0 0;
+  padding: 9px 12px 9px 28px;
+  font-size: 11px;
+  color: #64748b;
+  line-height: 1.55;
+  list-style: disc;
+  background: #ffffff;
+  border: 1px dashed rgba(148, 163, 184, 0.36);
+  border-radius: var(--radius-sm);
+}
+
+.metric-notes::before {
+  content: "指标解释";
+  display: block;
+  margin-left: -16px;
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.metric-notes li {
+  margin: 4px 0;
+}
+
+@media (max-width: 900px) {
+  .chart-grid,
+  .chart-grid.three {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-row {
+    flex-direction: column;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="page">
+<h1>4月协同任务与委外管理数据看板</h1>
+<p class="subtitle">周期：2026-04-01 ~ 2026-04-26（截至上一完整日）<br>
+维度：按周；首周为 04/01-04/05 的月初不完整周</p>
+
+<div class="summary-row">
+  <div class="kpi">
+    <div class="title">协同覆盖工厂</div>
+    <div class="val">105<span class="badge down">▼ 10.3%</span></div>
+    <div class="sub">上期 117</div>
+  </div>
+  <div class="kpi">
+    <div class="title">协同任务数</div>
+    <div class="val">2605<span class="badge down">▼ 2.6%</span></div>
+    <div class="sub">上期 2674</div>
+  </div>
+  <div class="kpi">
+    <div class="title">协同留存</div>
+    <div class="val">66.7%<span class="badge down">▼ 7.4%</span></div>
+    <div class="sub">上期 72.0%</div>
+  </div>
+  <div class="kpi">
+    <div class="title">委外覆盖客户</div>
+    <div class="val">670<span class="badge up">▲ 2.1%</span></div>
+    <div class="sub">上期 656</div>
+  </div>
+  <div class="kpi">
+    <div class="title">委外订单客户</div>
+    <div class="val">912<span class="badge up">▲ 1.8%</span></div>
+    <div class="sub">上期 896</div>
+  </div>
+  <div class="kpi">
+    <div class="title">委外转化率</div>
+    <div class="val">73.5%<span class="badge up">▲ 0.3%</span></div>
+    <div class="sub">上期 73.2%</div>
+  </div>
+</div>
+
+
+<div class="section">
+  <div class="section-title green"><span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 7h10v6H7z"></path><path d="M9 17h6"></path><path d="M12 13v4"></path><circle cx="6" cy="18" r="2"></circle><circle cx="18" cy="18" r="2"></circle></svg></span><span>协同任务：使用规模与持续活跃</span></div>
+  <div class="chart-grid">
+    <div class="chart-card tone-green">
+      <h3>协同任务的创建节奏与活跃工厂</h3>
+      <div class="chart-body">
+        <canvas id="c_collab_tasks_act"></canvas>
+      </div>
+      <ul class="metric-notes">
+      <li>任务数：当期创建的协同任务条数（三分片相加）。</li>
+      <li>活跃工厂：当期创建过协同任务的工厂数（org_id跨分片并集）。</li>
+      </ul>
+      <div class="insight green"><b>洞察</b>：第4周创建任务 2605 条，较第3周小幅回落 2.6%；活跃工厂从 244 家降至 237 家，说明入口使用仍在，但新增和回流动能变弱。<br><b>建议</b>：拉出第3周有创建、第4周未创建的工厂清单，按客户成功负责人分派回访；同步在高频工单场景里提示“转协同任务”，降低再次创建门槛。</div>
+    </div>
+    <div class="chart-card tone-green">
+      <h3>协同任务的覆盖、留存与活跃转化</h3>
+      <div class="chart-body">
+        <canvas id="c_collab_coverage_ret"></canvas>
+      </div>
+      <ul class="metric-notes">
+      <li>覆盖工厂：当期至少2天创建任务的工厂数。</li>
+      <li>留存：上期覆盖工厂中，本期仍覆盖的比例。</li>
+      <li>活跃转化率：覆盖工厂/活跃工厂。</li>
+      </ul>
+      <div class="insight green"><b>洞察</b>：覆盖工厂从 117 家降至 105 家，留存率从 72.0% 降至 66.7%，活跃转化率也回落到 44.3%；问题集中在“有创建”到“多日持续使用”的转化。<br><b>建议</b>：优先运营两类客户：一类是第3周覆盖但第4周未留存客户，做降频原因确认；另一类是第4周只创建1天的客户，推送任务模板、待办提醒和协作闭环示例。</div>
+    </div>
+    <div class="chart-card tone-green">
+      <h3>协同任务的完成与工单入口贡献</h3>
+      <div class="chart-body">
+        <canvas id="c_collab_quality"></canvas>
+      </div>
+      <ul class="metric-notes">
+      <li>完成率：已完成任务数/当期创建任务数。</li>
+      <li>工单创建占比：associate_id非空任务数/当期任务数。</li>
+      </ul>
+      <div class="insight green"><b>洞察</b>：完成率连续下行至 52.9%，但工单创建占比提升到 19.7%；工单入口有效带来更多任务创建，但后续闭环能力没有同步提升。<br><b>建议</b>：把工单入口带来的任务单独建看板，跟踪“创建-响应-完成”漏斗；对未完成任务增加逾期提醒和责任人提醒，避免入口放量后沉淀为未闭环任务。</div>
+    </div>
+  </div>
+</div>
+<div class="section">
+  <div class="section-title orange"><span class="section-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 8h10v8H4z"></path><path d="M14 11h3l3 3v2h-6z"></path><circle cx="8" cy="18" r="2"></circle><circle cx="17" cy="18" r="2"></circle><path d="M7 8l2-3h6l2 3"></path></svg></span><span>委外管理：订单、收发与转化</span></div>
+  <div class="chart-grid">
+    <div class="chart-card tone-orange">
+      <h3>委外下单与收发客户规模</h3>
+      <div class="chart-body">
+        <canvas id="c_out_customers"></canvas>
+      </div>
+      <ul class="metric-notes">
+      <li>订单客户：当期创建过委外订单的客户数。</li>
+      <li>收发客户：当期有委外收发记录的客户数。</li>
+      </ul>
+      <div class="insight orange"><b>洞察</b>：订单客户从 896 家增至 912 家，收发客户从 699 家增至 711 家，委外需求侧和履约侧同步小幅增长，整体使用面稳定。<br><b>建议</b>：保留当前订单客户增长打法，同时把新增订单客户按是否产生收发记录分组，形成“新下单未收发”的跟进清单。</div>
+    </div>
+    <div class="chart-card tone-orange">
+      <h3>委外覆盖、转化与留存</h3>
+      <div class="chart-body">
+        <canvas id="c_out_coverage_conv"></canvas>
+      </div>
+      <ul class="metric-notes">
+      <li>覆盖客户：当期既有委外订单又有收发记录的客户交集。</li>
+      <li>订单到收发转化率：覆盖客户/订单客户。</li>
+      <li>留存：上期覆盖客户中，本期仍覆盖的比例。</li>
+      </ul>
+      <div class="insight orange"><b>洞察</b>：覆盖客户增至 670 家，订单到收发转化率稳定在 73.5%，但留存率下降到 67.7%；链路转化没有明显问题，风险主要在老客户连续使用。<br><b>建议</b>：对上期覆盖、本期未覆盖客户做三类拆分：本期无订单、本期有订单无收发、本期有收发无订单；分别对应业务停用、流程断点、数据口径/补录核查。</div>
+    </div>
+    <div class="chart-card tone-orange">
+      <h3>委外订单与收发记录量</h3>
+      <div class="chart-body">
+        <canvas id="c_out_volume"></canvas>
+      </div>
+      <ul class="metric-notes">
+      <li>订单量：dt_outsource_order当期创建记录数。</li>
+      <li>收发记录量：dt_outsource_post当期创建记录数。</li>
+      </ul>
+      <div class="insight orange"><b>洞察</b>：第4周订单量 29998 条，较第3周基本持平；收发记录量升至 46138 条，说明履约记录强度仍在提升。<br><b>建议</b>：重点排查“订单量持平但收发量上升”的客户结构，识别是否由少数高频客户拉动；若集中度高，需要补充客户分层指标，避免总体量掩盖长尾客户低活跃。</div>
+    </div>
+  </div>
+</div>
+
+
+<p class="footer-note">口径：ADB 01/02/03 分片按 org_id 并集去重；首周为月初不完整周。</p>
+
+<script>
+const labels = ["04/01-04/05", "04/06-04/12", "04/13-04/19", "04/20-04/26"];
+
+function mkLine(label, data, color, dash) {
+  return {
+    type: 'line',
+    label, data,
+    /* Chart.js：order 越大越先绘制（在底层）；折线后画，盖在柱子上 */
+    order: 0,
+    borderColor: color, backgroundColor: color+'18',
+    pointRadius: 3,
+    pointHoverRadius: 5,
+    pointHitRadius: 10,
+    pointBorderWidth: 2,
+    pointBorderColor: color,
+    pointBackgroundColor: '#ffffff',
+    borderWidth: 3, borderDash: dash || [], tension: 0.34, fill: false, spanGaps: true,
+  };
+}
+function mkBar(label, data, color, yAxisID) {
+  return {
+    type:'bar',
+    label,
+    data,
+    order: 10,
+    backgroundColor: color+'e0',
+    borderColor: color,
+    borderWidth: 1,
+    borderRadius: 8,
+    barPercentage: 0.62,
+    categoryPercentage: 0.72,
+    yAxisID: yAxisID || 'y'
+  };
+}
+const baseOpts = (yLabel) => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  layout: { padding: { top: 10, right: 10, bottom: 6, left: 8 } },
+  interaction: { mode:'index', intersect:false },
+  plugins: {
+    legend: {
+      position: 'top',
+      align: 'center',
+      labels: {
+        font: { size: 12, weight: '600' },
+        padding: 14,
+        color: '#334155',
+        usePointStyle: true,
+        pointStyle: 'rectRounded',
+        boxWidth: 10,
+        boxHeight: 10,
+      }
+    },
+    tooltip: {
+      padding: 10,
+      cornerRadius: 10,
+      backgroundColor: '#0f172a',
+      titleColor: '#fff',
+      bodyColor: '#e2e8f0',
+      displayColors: true,
+      usePointStyle: true,
+      boxPadding: 4,
+      titleAlign: 'center',
+      bodyAlign: 'left',
+    },
+  },
+  scales: {
+    x: { grid:{ color:'rgba(148,163,184,0.08)' }, ticks:{font:{size:12, weight:'500'}, color:'#64748b'} },
+    y: {
+      grid:{ color:'rgba(148,163,184,0.10)' },
+      ticks:{ font:{size:12, weight:'500'}, padding: 6, color:'#64748b' },
+      title:{ display:!!yLabel, text:yLabel, color:'#475569', font:{weight:'600'} },
+      beginAtZero:true,
+      grace: '8%',
+    },
+  },
+});
+const pctOpts = (yLabel='%') => {
+  const o = baseOpts(yLabel);
+  o.scales.y.min = 0; o.scales.y.max = 100; o.scales.y.grace = 0;
+  o.scales.y.ticks.callback = v => v + '%';
+  o.scales.y.ticks.color = '#64748b';
+  o.plugins.tooltip.callbacks = { label: ctx => ctx.dataset.label + ': ' + (ctx.parsed.y ?? '-') + '%' };
+  return o;
+};
+const dualOpts = (yLeft, yRight) => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  layout: { padding: { top: 10, right: 12, bottom: 6, left: 8 } },
+  interaction: { mode:'index', intersect:false },
+  plugins: {
+    legend: {
+      position: 'top',
+      align: 'center',
+      labels: {
+        font: { size: 12, weight: '600' },
+        padding: 14,
+        color: '#334155',
+        usePointStyle: true,
+        pointStyle: 'rectRounded',
+        boxWidth: 10,
+        boxHeight: 10,
+      }
+    },
+    tooltip: {
+      padding: 10,
+      cornerRadius: 10,
+      backgroundColor: '#0f172a',
+      titleColor: '#fff',
+      bodyColor: '#e2e8f0',
+      displayColors: true,
+      usePointStyle: true,
+      boxPadding: 4,
+      titleAlign: 'center',
+      bodyAlign: 'left',
+    },
+  },
+  scales: {
+    x: { grid:{ color:'rgba(148,163,184,0.08)' }, ticks:{font:{size:12, weight:'500'}, color:'#64748b'} },
+    y: {
+      position:'left', beginAtZero:true, grace:'8%',
+      title:{display:true,text:yLeft, color:'#475569', font:{weight:'600'}}, grid:{color:'rgba(148,163,184,0.10)'},
+      ticks:{ font:{size:12, weight:'500'}, padding: 6, color:'#64748b' },
+    },
+    y1: {
+      position:'right', beginAtZero:true, grace:'8%',
+      title:{display:true,text:yRight, color:'#475569', font:{weight:'600'}}, grid:{drawOnChartArea:false},
+      ticks:{ font:{size:12, weight:'500'}, padding: 6, color:'#64748b' },
+    },
+  },
+});
+
+new Chart(document.getElementById('c_collab_tasks_act'), {
+  type: 'bar',
+  data: { labels, datasets: [
+    mkBar('创建任务', [959, 2449, 2674, 2605], '#5f7cf2', 'y'),
+    {...mkLine('活跃工厂', [139, 233, 244, 237], '#2f9e85', [6, 3]), yAxisID:'y1'}
+  ]},
+  options: dualOpts('任务数','工厂数')
+});
+new Chart(document.getElementById('c_collab_coverage_ret'), {
+  type: 'line',
+  data: { labels, datasets: [
+    mkBar('覆盖工厂', [65, 107, 117, 105], '#5f7cf2', 'y'),
+    {...mkLine('留存率', [null, 83.08, 71.96, 66.67], '#7c5ce6', [6, 3]), yAxisID:'y1'},
+    {...mkLine('活跃转化率', [46.76, 45.92, 47.95, 44.30], '#2f9e85', []), yAxisID:'y1'}
+  ]},
+  options: dualOpts('工厂数','占比')
+});
+new Chart(document.getElementById('c_collab_quality'), {
+  type: 'line',
+  data: { labels, datasets: [
+    {...mkLine('完成率', [62.46, 61.33, 56.54, 52.90], '#5f7cf2', []), yAxisID:'y'},
+    {...mkLine('工单创建占比', [12.30, 11.92, 12.94, 19.73], '#d9774a', [6, 3]), yAxisID:'y'}
+  ]},
+  options: pctOpts('%')
+});
+new Chart(document.getElementById('c_out_customers'), {
+  type: 'bar',
+  data: { labels, datasets: [
+    mkBar('订单客户', [644, 807, 896, 912], '#e6a25e', 'y'),
+    {...mkLine('收发客户', [523, 626, 699, 711], '#2f9e85', [6, 3]), yAxisID:'y'}
+  ]},
+  options: baseOpts('客户数')
+});
+new Chart(document.getElementById('c_out_coverage_conv'), {
+  type: 'line',
+  data: { labels, datasets: [
+    mkBar('覆盖客户', [472, 595, 656, 670], '#e6a25e', 'y'),
+    {...mkLine('订单到收发转化率', [73.29, 73.73, 73.21, 73.46], '#7c5ce6', [6, 3]), yAxisID:'y1'},
+    {...mkLine('留存率', [null, 75.64, 73.11, 67.68], '#d9774a', []), yAxisID:'y1'}
+  ]},
+  options: dualOpts('客户数','占比')
+});
+new Chart(document.getElementById('c_out_volume'), {
+  type: 'bar',
+  data: { labels, datasets: [
+    mkBar('委外订单量', [14765, 27238, 30137, 29998], '#e6a25e', 'y'),
+    {...mkLine('收发记录量', [20731, 43053, 43474, 46138], '#2f9e85', [6, 3]), yAxisID:'y'}
+  ]},
+  options: baseOpts('记录数')
+});
+</script>
+</div>
+</body>
+</html>

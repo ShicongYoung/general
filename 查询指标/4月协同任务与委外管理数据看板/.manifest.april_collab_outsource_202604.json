@@ -1,0 +1,268 @@
+{
+  "version": 1,
+  "stylesheet": "chart-report-light.css",
+  "page": {
+    "title": "4月协同任务与委外管理数据看板",
+    "subtitle_lines": [
+      "周期：2026-04-01 ~ 2026-04-26（截至上一完整日）",
+      "维度：按周；首周为 04/01-04/05 的月初不完整周",
+      "数据：<code>/Users/yangshicong/Documents/指标分析工具箱/查询指标/4月协同任务与委外管理数据看板/latest.json</code>"
+    ]
+  },
+  "kpi": [
+    {
+      "title": "协同覆盖工厂",
+      "bind": "collab.covered",
+      "format": "int"
+    },
+    {
+      "title": "协同任务数",
+      "bind": "collab.tasks",
+      "format": "int"
+    },
+    {
+      "title": "协同留存",
+      "bind": "collab.ret",
+      "format": "pct"
+    },
+    {
+      "title": "委外覆盖客户",
+      "bind": "outsource.covered",
+      "format": "int"
+    },
+    {
+      "title": "委外订单客户",
+      "bind": "outsource.order_customers",
+      "format": "int"
+    },
+    {
+      "title": "委外转化率",
+      "bind": "outsource.conversion",
+      "format": "pct"
+    }
+  ],
+  "sections": [
+    {
+      "theme": "slate",
+      "heading": "<span class=\"section-icon\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\"><path d=\"M7 7h10v6H7z\"></path><path d=\"M9 17h6\"></path><path d=\"M12 13v4\"></path><circle cx=\"6\" cy=\"18\" r=\"2\"></circle><circle cx=\"18\" cy=\"18\" r=\"2\"></circle></svg></span><span>协同任务：使用规模与持续活跃</span>",
+      "charts": [
+        {
+          "id": "c_collab_tasks_act",
+          "title": "协同任务的创建节奏与活跃工厂",
+          "root_type": "bar",
+          "y_left": "任务数",
+          "y_right": "工厂数",
+          "metric_notes": [
+            "任务数：当期创建的协同任务条数（三分片相加）。",
+            "活跃工厂：当期创建过协同任务的工厂数（org_id跨分片并集）。"
+          ],
+          "datasets": [
+            {
+              "bind": "collab.tasks",
+              "label": "创建任务",
+              "shape": "bar",
+              "format": "int",
+              "role": "primary",
+              "color": "#2563eb"
+            },
+            {
+              "bind": "collab.act",
+              "label": "活跃工厂",
+              "shape": "line",
+              "y_axis": "y1",
+              "format": "int",
+              "role": "contrast",
+              "color": "#dc2626"
+            }
+          ],
+          "insight_lead": "<b>洞察</b>：第4周创建任务 2605 条，较第3周小幅回落 2.6%；活跃工厂从 244 家降至 237 家，说明入口使用仍在，但新增和回流动能变弱。<br><b>建议</b>：拉出第3周有创建、第4周未创建的工厂清单，按客户成功负责人分派回访；同步在高频工单场景里提示“转协同任务”，降低再次创建门槛。",
+          "manual_insight_html": "<b>洞察</b>：第4周创建任务 2605 条，较第3周小幅回落 2.6%；活跃工厂从 244 家降至 237 家，说明入口使用仍在，但新增和回流动能变弱。<br><b>建议</b>：拉出第3周有创建、第4周未创建的工厂清单，按客户成功负责人分派回访；同步在高频工单场景里提示“转协同任务”，降低再次创建门槛。"
+        },
+        {
+          "id": "c_collab_coverage_ret",
+          "title": "协同任务的覆盖、留存与活跃转化",
+          "root_type": "line",
+          "use_pct_scale": false,
+          "y_left": "工厂数",
+          "y_right": "占比",
+          "metric_notes": [
+            "覆盖工厂：当期至少2天创建任务的工厂数。",
+            "留存：上期覆盖工厂中，本期仍覆盖的比例。",
+            "活跃转化率：覆盖工厂/活跃工厂。"
+          ],
+          "datasets": [
+            {
+              "bind": "collab.covered",
+              "label": "覆盖工厂",
+              "shape": "bar",
+              "format": "int",
+              "role": "primary",
+              "color": "#2563eb"
+            },
+            {
+              "bind": "collab.ret",
+              "label": "留存率",
+              "shape": "line",
+              "y_axis": "y1",
+              "format": "ratio",
+              "role": "contrast",
+              "color": "#7c3aed"
+            },
+            {
+              "bind": "collab.active_conversion",
+              "label": "活跃转化率",
+              "shape": "line",
+              "y_axis": "y1",
+              "format": "ratio",
+              "role": "secondary",
+              "color": "#059669"
+            }
+          ],
+          "insight_lead": "<b>洞察</b>：覆盖工厂从 117 家降至 105 家，留存率从 72.0% 降至 66.7%，活跃转化率也回落到 44.3%；问题集中在“有创建”到“多日持续使用”的转化。<br><b>建议</b>：优先运营两类客户：一类是第3周覆盖但第4周未留存客户，做降频原因确认；另一类是第4周只创建1天的客户，推送任务模板、待办提醒和协作闭环示例。",
+          "manual_insight_html": "<b>洞察</b>：覆盖工厂从 117 家降至 105 家，留存率从 72.0% 降至 66.7%，活跃转化率也回落到 44.3%；问题集中在“有创建”到“多日持续使用”的转化。<br><b>建议</b>：优先运营两类客户：一类是第3周覆盖但第4周未留存客户，做降频原因确认；另一类是第4周只创建1天的客户，推送任务模板、待办提醒和协作闭环示例。"
+        },
+        {
+          "id": "c_collab_quality",
+          "title": "协同任务的完成与工单入口贡献",
+          "root_type": "line",
+          "use_pct_scale": true,
+          "y_left": "占比（%）",
+          "metric_notes": [
+            "完成率：已完成任务数/当期创建任务数。",
+            "工单创建占比：associate_id非空任务数/当期任务数。"
+          ],
+          "datasets": [
+            {
+              "bind": "collab.complete_rate",
+              "label": "完成率",
+              "shape": "line",
+              "format": "ratio",
+              "role": "primary",
+              "color": "#2563eb"
+            },
+            {
+              "bind": "collab.assoc_rate",
+              "label": "工单创建占比",
+              "shape": "line",
+              "format": "ratio",
+              "role": "contrast",
+              "color": "#dc2626"
+            }
+          ],
+          "insight_lead": "<b>洞察</b>：完成率连续下行至 52.9%，但工单创建占比提升到 19.7%；工单入口有效带来更多任务创建，但后续闭环能力没有同步提升。<br><b>建议</b>：把工单入口带来的任务单独建看板，跟踪“创建-响应-完成”漏斗；对未完成任务增加逾期提醒和责任人提醒，避免入口放量后沉淀为未闭环任务。",
+          "manual_insight_html": "<b>洞察</b>：完成率连续下行至 52.9%，但工单创建占比提升到 19.7%；工单入口有效带来更多任务创建，但后续闭环能力没有同步提升。<br><b>建议</b>：把工单入口带来的任务单独建看板，跟踪“创建-响应-完成”漏斗；对未完成任务增加逾期提醒和责任人提醒，避免入口放量后沉淀为未闭环任务。"
+        }
+      ]
+    },
+    {
+      "theme": "cyan",
+      "heading": "<span class=\"section-icon\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\"><path d=\"M4 8h10v8H4z\"></path><path d=\"M14 11h3l3 3v2h-6z\"></path><circle cx=\"8\" cy=\"18\" r=\"2\"></circle><circle cx=\"17\" cy=\"18\" r=\"2\"></circle><path d=\"M7 8l2-3h6l2 3\"></path></svg></span><span>委外管理：订单、收发与转化</span>",
+      "charts": [
+        {
+          "id": "c_out_customers",
+          "title": "委外下单与收发客户规模",
+          "root_type": "bar",
+          "y_left": "客户数",
+          "metric_notes": [
+            "订单客户：当期创建过委外订单的客户数。",
+            "收发客户：当期有委外收发记录的客户数。"
+          ],
+          "datasets": [
+            {
+              "bind": "outsource.order_customers",
+              "label": "订单客户",
+              "shape": "bar",
+              "format": "int",
+              "role": "primary",
+              "color": "#ea580c"
+            },
+            {
+              "bind": "outsource.post_customers",
+              "label": "收发客户",
+              "shape": "line",
+              "format": "int",
+              "role": "contrast",
+              "color": "#0f766e"
+            }
+          ],
+          "insight_lead": "<b>洞察</b>：订单客户从 896 家增至 912 家，收发客户从 699 家增至 711 家，委外需求侧和履约侧同步小幅增长，整体使用面稳定。<br><b>建议</b>：保留当前订单客户增长打法，同时把新增订单客户按是否产生收发记录分组，形成“新下单未收发”的跟进清单。",
+          "manual_insight_html": "<b>洞察</b>：订单客户从 896 家增至 912 家，收发客户从 699 家增至 711 家，委外需求侧和履约侧同步小幅增长，整体使用面稳定。<br><b>建议</b>：保留当前订单客户增长打法，同时把新增订单客户按是否产生收发记录分组，形成“新下单未收发”的跟进清单。"
+        },
+        {
+          "id": "c_out_coverage_conv",
+          "title": "委外覆盖、转化与留存",
+          "root_type": "line",
+          "use_pct_scale": false,
+          "y_left": "客户数",
+          "y_right": "占比",
+          "metric_notes": [
+            "覆盖客户：当期既有委外订单又有收发记录的客户交集。",
+            "订单到收发转化率：覆盖客户/订单客户。",
+            "留存：上期覆盖客户中，本期仍覆盖的比例。"
+          ],
+          "datasets": [
+            {
+              "bind": "outsource.covered",
+              "label": "覆盖客户",
+              "shape": "bar",
+              "format": "int",
+              "role": "primary",
+              "color": "#ea580c"
+            },
+            {
+              "bind": "outsource.conversion",
+              "label": "订单到收发转化率",
+              "shape": "line",
+              "y_axis": "y1",
+              "format": "ratio",
+              "role": "contrast",
+              "color": "#7c3aed"
+            },
+            {
+              "bind": "outsource.ret",
+              "label": "留存率",
+              "shape": "line",
+              "y_axis": "y1",
+              "format": "ratio",
+              "role": "secondary",
+              "color": "#dc2626"
+            }
+          ],
+          "insight_lead": "<b>洞察</b>：覆盖客户增至 670 家，订单到收发转化率稳定在 73.5%，但留存率下降到 67.7%；链路转化没有明显问题，风险主要在老客户连续使用。<br><b>建议</b>：对上期覆盖、本期未覆盖客户做三类拆分：本期无订单、本期有订单无收发、本期有收发无订单；分别对应业务停用、流程断点、数据口径/补录核查。",
+          "manual_insight_html": "<b>洞察</b>：覆盖客户增至 670 家，订单到收发转化率稳定在 73.5%，但留存率下降到 67.7%；链路转化没有明显问题，风险主要在老客户连续使用。<br><b>建议</b>：对上期覆盖、本期未覆盖客户做三类拆分：本期无订单、本期有订单无收发、本期有收发无订单；分别对应业务停用、流程断点、数据口径/补录核查。"
+        },
+        {
+          "id": "c_out_volume",
+          "title": "委外订单与收发记录量",
+          "root_type": "bar",
+          "y_left": "记录数",
+          "metric_notes": [
+            "订单量：dt_outsource_order当期创建记录数。",
+            "收发记录量：dt_outsource_post当期创建记录数。"
+          ],
+          "datasets": [
+            {
+              "bind": "outsource.order_count",
+              "label": "委外订单量",
+              "shape": "bar",
+              "format": "int",
+              "role": "primary",
+              "color": "#ea580c"
+            },
+            {
+              "bind": "outsource.post_count",
+              "label": "收发记录量",
+              "shape": "line",
+              "format": "int",
+              "role": "contrast",
+              "color": "#0f766e"
+            }
+          ],
+          "insight_lead": "<b>洞察</b>：第4周订单量 29998 条，较第3周基本持平；收发记录量升至 46138 条，说明履约记录强度仍在提升。<br><b>建议</b>：重点排查“订单量持平但收发量上升”的客户结构，识别是否由少数高频客户拉动；若集中度高，需要补充客户分层指标，避免总体量掩盖长尾客户低活跃。",
+          "manual_insight_html": "<b>洞察</b>：第4周订单量 29998 条，较第3周基本持平；收发记录量升至 46138 条，说明履约记录强度仍在提升。<br><b>建议</b>：重点排查“订单量持平但收发量上升”的客户结构，识别是否由少数高频客户拉动；若集中度高，需要补充客户分层指标，避免总体量掩盖长尾客户低活跃。"
+        }
+      ]
+    }
+  ],
+  "footer_note": "数据：<code>/Users/yangshicong/Documents/指标分析工具箱/查询指标/4月协同任务与委外管理数据看板/latest.json</code>。口径：ADB 01/02/03 分片按 org_id 并集去重；首周为月初不完整周。"
+}

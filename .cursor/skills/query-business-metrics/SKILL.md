@@ -54,10 +54,32 @@ python3 .cursor/skills/query-business-metrics/scripts/run_archery_query.py \
 5. **ADB 多分片**：继续 **按实例拆分**；单分片内避免 **巨型 `IN`**（必要时改 **存在性子查询** 或分段）；合并工厂时优先 **`run_archery_query.py --adb-merge`**。
 6. **脚本批跑**：周期循环查数时，复用 **已验证的快 SQL**，不要为省事复制低效模板。
 
+## ADB 多分片：比率类指标（xx 率）的跨实例去重（标准口径）
+
+凡指标形态为 **比率 / 比例 / 转化率 / 留存率 / 占比** 等（记作「xx 率」），且 **分子或分母涉及客户、工厂等实体**（常见 **`org_id`**）时，**必须**按 **全局去重** 后再算率，避免多分片下重复计数或「分片率取平均」失真。
+
+**推荐流程（与「先并集、再算率」一致）：**
+
+1. **分实例**跑同一套 SQL（或分步查询），得到各分片上的 **实体集合**（如 `SELECT DISTINCT org_id ...`）或 **仅单分片内可解释的计数**。
+2. 在脚本侧对实体 ID 做 **并集（union）去重**（`set` 合并），得到 **全局分子集合、全局分母集合**（或全局 distinct 计数）。
+3. **xx 率 = 全局分子 / 全局分母**（分母为 0 时单独约定展示为 N/A 或 0，并在口径中写明）。
+
+**不推荐（除非用户明确接受近似口径并写明）：**
+
+- 各实例 **先各自算一个率** 再 **算术平均**。
+- 在 **未确认**「实体是否只落在一个分片」时，把多分片的分子、分母 **简单相加** 当作全局（若存在跨片重复 `org_id`，会偏离全局比率）。
+
+**工具衔接：**
+
+- 命令行合并多实例结果时，优先 **`run_archery_query.py --adb-merge`**（按工具说明合并）；本质目标仍是 **全局 distinct 后再算率**。
+- 周报委外留存若需用「拉齐 org_id 再交集/并集」核对，可用 **`.cursor/skills/weekly-core-metrics/scripts/compare_outsource_retention_deduped.py`** 与脚本结果对照。
+
+**说明：** 当业务上 **每个 `org_id` 只存在于一个 ADB 分片** 时，「分片内计数再相加」与「并集去重后计数」在数值上常 **一致**；**标准写法仍以上述「并集去重」为准**，便于与异常重复数据、迁移数据对齐。
+
 ## 第四步：推断口径并写 SQL
 
 1. **工厂维度**：ADB 一般用 **`org_id`**；埋点 **`orgId`**。
-2. **多分片（ADB 01/02/03）**：每个实例跑同一 SQL，对 **`org_id` 列表做并集** 再计数；或 **`run_archery_query.py --adb-merge`**。
+2. **多分片（ADB 01/02/03）**：每个实例跑同一 SQL，对 **`org_id` 列表做并集** 再计数；或 **`run_archery_query.py --adb-merge`**；**比率类指标** 另见上一节 **「ADB 多分片：比率类指标」**。
 3. **StarRocks**：`trace_log_dp` 中保留字列名如 `` `function` `` 需反引号；JSON 常用 `get_json_string(eventValues, '$.url')`。
 4. **软删**：有 `deleted_at` 时通常 `COALESCE(deleted_at, 0) = 0`。
 5. **时间窗（默认规则，须遵守）**：
@@ -81,6 +103,7 @@ python3 .cursor/skills/query-business-metrics/scripts/run_archery_query.py \
 
 - **埋点** → `小工单_阿里云_prod_starrocks` + `trace_log_dp`
 - **业务表** → ADB **01、02、03** + `liteman` + 按业务选表；**按工厂统计必须合并三实例**
+- **ADB 比率类**（转化率、留存率、占比等）→ **跨实例并集去重后再算率**，见上文 **「ADB 多分片：比率类指标」**；周报场景见 **[weekly-core-metrics](../weekly-core-metrics/SKILL.md)** 中 **「多分片比率与跨实例去重」**
 
 ## 与图表产出（两段式）
 
@@ -91,13 +114,47 @@ python3 .cursor/skills/query-business-metrics/scripts/run_archery_query.py \
 
 **FY2025 月度看板**：口径见 **`查询指标/FY2025_功能使用年度总结_口径.md`**；数据文件 **`FY2025_chart_data.json`** 由业务按需更新（专用导出脚本已移除）。
 
+## Skills 内复用层（推荐）
+
+当用户需求是「查询任何指标 / 生成任何看板」且希望**复用脚手架**时，复用层应全部沉淀在本技能目录（`.cursor/skills/`）内：
+
+- 看板运行器：`.cursor/skills/query-business-metrics/scripts/run_dashboard.py`
+- 指标运行器：`.cursor/skills/query-business-metrics/scripts/run_metric.py`
+- 看板 registry / 模板：`.cursor/skills/query-business-metrics/dashboards/`
+- 指标 registry：`.cursor/skills/query-business-metrics/metrics/`
+
+用户目录（`查询指标/`、`图表/`）只放**交付物**（md / data.json / snapshots / html），不放复用配置文件。
+
+### 生成看板（零配置：recipe + 参数 → 交付物）
+
+```bash
+python3 .cursor/skills/query-business-metrics/scripts/run_dashboard.py all \
+  --recipe <recipe_id> \
+  --out-data "查询指标/<看板目录>/latest.json" \
+  --snapshot-dir "查询指标/<看板目录>/snapshots" \
+  --out-html "图表/<看板名>.html" \
+  --out-md "查询指标/<看板名>.md"
+```
+
+可用 recipe 列表：
+
+```bash
+python3 .cursor/skills/query-business-metrics/scripts/run_dashboard.py list-recipes
+```
+
+### 查询单个指标（零配置：metric + 参数 → `查询指标/*.md`）
+
+```bash
+python3 .cursor/skills/query-business-metrics/scripts/run_metric.py list-metrics
+
+python3 .cursor/skills/query-business-metrics/scripts/run_metric.py run \
+  --metric <metric_id> \
+  --start YYYY-MM-DD --end YYYY-MM-DD \
+  --out-md "查询指标/<指标名>.md"
+```
+
 ## 注意事项
 
 - Token 易失效：鉴权失败时让用户更新 **`weekly-core-metrics/scripts/config.json`** 中的 `csrftoken` / `sessionid`。
 - `trace_log_dp` **保留周期有限**；历史财年可能没有埋点，需说明「不可得」或换业务表口径。
 - **单次指标查询交付**：**只写一个 `.md`** 到 **`查询指标/`**（含口径 + 结果）；`run_archery_query.py` 的 **`--output`** 仅作原始响应调试，不作为指标正式交付物。
-</think>
-
-
-<｜tool▁calls▁begin｜><｜tool▁call▁begin｜>
-StrReplace
