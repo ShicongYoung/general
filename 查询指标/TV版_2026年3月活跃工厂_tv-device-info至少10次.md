@@ -38,4 +38,4 @@ FROM (
 ## 备注
 
 - 与 `reference-tables.md` 默认「一周内不同自然日数 > 1」的 TV 活跃定义不同；本题为明确 **`tv-device-info≥10`** 条件下的单月统计。
-- 查数：`.cursor/skills/query-business-metrics/scripts/run_archery_query.py`（`--var` 替换 SQL 模板中的日期占位符）。
+- 查数：`/Users/yangshicong/.agents/skills/query-business-metrics/scripts/run_archery_query.py`（`--var` 替换 SQL 模板中的日期占位符）。
